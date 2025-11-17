@@ -35,6 +35,7 @@
   - [Migrating from near-api-js](./migrating-from-near-api-js.md)
 
 - [For AI Agents]()
+  - [Introduction](./llm/00-introduction.md)
   - [Initialization](./llm/01-initialization.md)
   - [Reading Data](./llm/02-reading-data.md)
   - [Transaction Builder](./llm/03-transaction-builder.md)
@@ -42,3 +43,5 @@
   - [Error Handling](./llm/05-error-handling.md)
   - [Sandbox Testing](./llm/06-sandbox-testing.md)
   - [End-to-End Example](./llm/07-e2e-example.md)
+  - [Frontend Wallet Integration](./llm/08-frontend-wallet-integration.md)
+  - [Advanced Topics](./llm/09-advanced-topics.md)
