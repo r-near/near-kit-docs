@@ -35,7 +35,6 @@ jobs:
       - name: Install mdbook tools
         run: |
           cargo install mdbook-admonish mdbook-llms-txt-tools mdbook-linkcheck
-          mdbook-admonish install .
       - name: Build book
         run: mdbook build
 
