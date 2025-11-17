@@ -1,0 +1,36 @@
+[book]
+authors = ["r-near"]
+language = "en"
+src = "src"
+title = "near-kit"
+description = "A TypeScript library for interacting with NEAR - simple, type-safe, and intuitive"
+
+[output.html]
+default-theme = "latte"
+preferred-dark-theme = "macchiato"
+additional-css = [
+    "theme/mdbook-admonish.css",
+    "theme/catppuccin.css",
+    "theme/catppuccin-admonish.css",
+    # custom
+    "theme/aha_styles.css",
+    "theme/mdbook-admonish-custom.css",
+    "theme/custom.css", "./mdbook-admonish.css",
+]
+no-section-label = true
+
+[preprocessor.admonish]
+command = "mdbook-admonish"
+assets_version = "3.1.0" # do not edit: managed by `mdbook-admonish install`
+
+[[preprocessor.admonish.custom]]
+directive = "reset"
+icon = "./theme/reset.svg"
+color = "#9e9e9e"          # same as "quote"
+
+[preprocessor.admonish.default]
+collapsible = true
+
+[output.linkcheck]
+
+[output.llms-txt-full]
