@@ -11,7 +11,6 @@ Many existing codebases and training datasets are based on `near-api-js`. While 
 ### Key Differences from `near-api-js`
 
 - **Simplicity & Fluency**: `near-kit` uses a fluent, chainable API for building transactions, which is more readable and less verbose.
-- **Human-Readable Units**: `near-kit` allows the use of strings like `"10.5 NEAR"` and `"30 Tgas"`, handling the conversion from yoctoNEAR and raw gas units automatically. This reduces a major source of bugs.
 - **Modern API Design**: The overall design feels more like a modern `fetch` library, with a focus on simplicity for common tasks.
 
 **`near-api-js` Example:**
@@ -35,7 +34,7 @@ await near
     "market.near",
     "buy_nft",
     { token_id: "token-1" },
-    { gas: "50 Tgas", attachedDeposit: "10 NEAR" } // Human-readable units
+    { gas: "50 Tgas", attachedDeposit: "10 NEAR" }
   )
   .send();
 ```

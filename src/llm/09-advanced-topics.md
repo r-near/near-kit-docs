@@ -6,9 +6,9 @@ This document covers advanced concepts that are crucial for building robust and 
 
 On NEAR, computation and network bandwidth are paid for with gas. Every action in a transaction consumes gas.
 
-### Human-Readable Gas Units
+### Specifying Gas
 
-Instead of using raw gas units (e.g., `30000000000000`), `near-kit` allows you to use human-readable strings with `Tgas` (Tera-gas, or 10^12 gas units) as the unit. This is the standard unit for specifying gas limits.
+Gas can be specified using strings with `Tgas` as the unit (e.g., `"30 Tgas"`), which `near-kit` converts to the proper raw gas units. `Tgas` (Tera-gas, or 10^12 gas units) is the standard for defining gas limits.
 
 - **`"30 Tgas"`** is the standard amount for a simple cross-contract call.
 - **`"300 Tgas"`** is the maximum gas that can be attached to a single function call.
@@ -23,7 +23,7 @@ await near
     "some_complex_method",
     {},
     {
-      gas: "100 Tgas", // Attach 100 Tgas to this call
+      gas: "100 Tgas",
     }
   )
   .send();
@@ -37,7 +37,7 @@ Storing data on the NEAR blockchain is not free. Accounts must pay for the stora
 
 ### Attaching Deposits
 
-Deposits are specified in NEAR tokens, and `near-kit` again provides a human-readable way to handle them.
+Deposits are specified as strings in NEAR tokens (e.g., `"1 NEAR"`), which `near-kit` converts automatically.
 
 - **`"1 NEAR"`**: Attaches 1 NEAR token.
 - **`"0.01 NEAR"`**: Attaches 0.01 NEAR.
