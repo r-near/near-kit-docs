@@ -2,6 +2,7 @@
 
 - [Introduction](./introduction.md)
   - [Getting Started](./getting-started.md)
+  - [Using with AI Agents](./ai-integration.md)
 
 - [Core Concepts]()
   - [The `Near` Instance](./core-concepts/near-instance.md)
