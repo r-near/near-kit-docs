@@ -16,7 +16,6 @@ additional-css = [
     "theme/aha_styles.css",
     "theme/mdbook-admonish-custom.css",
     "theme/custom.css",
-    "./mdbook-admonish.css",
 ]
 no-section-label = true
 
