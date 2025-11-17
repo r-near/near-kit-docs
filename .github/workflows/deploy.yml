@@ -28,14 +28,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
+            ~/.cargo/bin
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-cargo-mdbook-tools
+          key: ${{ runner.os }}-cargo-mdbook-tools-${{ hashFiles('**/deploy.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-mdbook-tools-
 
       - name: Install mdbook tools
         run: |
-          cargo install --git https://github.com/r-near/mdbook-llms-txt-tools 
-          cargo install mdbook-admonish mdbook-linkcheck
+          # Only install if not already cached
+          command -v mdbook-llms-txt >/dev/null 2>&1 || cargo install --git https://github.com/r-near/mdbook-llms-txt-tools
+          command -v mdbook-admonish >/dev/null 2>&1 || cargo install mdbook-admonish
+          command -v mdbook-linkcheck >/dev/null 2>&1 || cargo install mdbook-linkcheck
       - name: Build book
         run: mdbook build
 
