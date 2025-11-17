@@ -41,8 +41,8 @@ jobs:
 
       - name: Copy the LLMs txt files
         run: |
-          cp llms-txt/llms.txt ./book/html/llms.txt
-          cp llms-txt-full/llms-full.txt ./book/html/llms-full.txt
+          cp ./book/llms-txt/llms.txt ./book/html/llms.txt
+          cp ./book/llms-txt-full/llms-full.txt ./book/html/llms-full.txt
 
       - name: Deploy to Cloudflare Workers (Static Site)
         uses: cloudflare/wrangler-action@v3
