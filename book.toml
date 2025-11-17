@@ -33,4 +33,10 @@ collapsible = true
 
 [output.linkcheck]
 
+[output.llms-txt]
+document_root_uri = "https://kit.near.tools"
+only_section = "For AI Agents"
+
+# Optional: a full-content variant restricted to the same section
 [output.llms-txt-full]
+only_section = "For AI Agents"
