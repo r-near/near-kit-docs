@@ -34,9 +34,15 @@ jobs:
 
       - name: Install mdbook tools
         run: |
-          cargo install mdbook-admonish mdbook-llms-txt-tools mdbook-linkcheck
+          cargo install --git https://github.com/r-near/mdbook-llms-txt-tools 
+          cargo install mdbook-admonish mdbook-linkcheck
       - name: Build book
         run: mdbook build
+
+      - name: Copy the LLMs txt files
+        run: |
+          cp llms-txt/llms.txt ./book/html/llms.txt
+          cp llms-txt-full/llms-full.txt ./book/html/llms-full.txt
 
       - name: Deploy to Cloudflare Workers (Static Site)
         uses: cloudflare/wrangler-action@v3
