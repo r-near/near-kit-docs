@@ -22,8 +22,8 @@ const near = new Near({
 
 try {
   const result = await near
-    .[transaction](../transactions/builder.md)("signer.testnet")
-    .[functionCall](../transactions/actions.md#functioncall)("some-contract.testnet", "some_method", {})
+    .transaction("signer.testnet")
+    .functionCall("some-contract.testnet", "some_method", {})
     .send()
 } catch (error) {
   // Check the error's type
