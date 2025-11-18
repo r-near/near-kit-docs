@@ -18,6 +18,8 @@ additional-css = [
     "theme/custom.css",
 ]
 no-section-label = true
+git-repository-url = "https://github.com/r-near/near-kit-docs"
+edit-url-template = "https://github.com/r-near/near-kit-docs/edit/main/{path}"
 
 [preprocessor.admonish]
 command = "mdbook-admonish"
