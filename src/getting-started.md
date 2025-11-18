@@ -49,7 +49,6 @@ async function main() {
   console.log(`Initialized client for account [${YOUR_ACCOUNT_ID}]`)
 
   // --- 3. View a contract (read-only, no cost) ---
-  // See docs for [near.view](./core-concepts/reading-data.md)
   // Let's check the messages on the guest book contract.
   const messages = await near.view(
     "guestbook.near-examples.testnet",
