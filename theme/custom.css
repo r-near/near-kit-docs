@@ -2,3 +2,8 @@
   font-style: italic;
   color: rgb(200, 201, 219);
 } */
+
+/* Increase base font size to 150% of original */
+html {
+  font-size: 80% !important;
+}

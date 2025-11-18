@@ -3,7 +3,7 @@
 While server-side applications use [private keys](../core-concepts/key-management.md), [decentralized applications (dApps)](../dapp-development/message-signing.md) in the browser need to interact with a user's wallet. `near-kit` provides simple adapters to integrate with the most popular wallet connection libraries.
 
 ```admonish info title="Looking for a complete example?"
-A fully tested frontend application using `near-kit` with both [Wallet Selector](./wallet-selector.md) and [HOT Protocol](./hot-connector.md) is [available here](https://github.com/r-near/near-kit-browser-example). It serves as a practical, real-world reference for the patterns described in this guide.
+A fully tested frontend application using `near-kit` with both [Wallet Selector](./wallet-selector.md) and [HOT Protocol](./hot-connector.md) is [available here](https://github.com/r-near/near-kit-guestbook-demo). It serves as a practical, real-world reference for the patterns described in this guide.
 ```
 
 ## The Universal Code Pattern
