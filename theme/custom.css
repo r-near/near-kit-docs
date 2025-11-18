@@ -3,7 +3,7 @@
   color: rgb(200, 201, 219);
 } */
 
-/* Increase base font size to 150% of original */
+/* Increase base font size to 120% of original */
 html {
-  zoom: 150% !important;
+  zoom: 120% !important;
 }
