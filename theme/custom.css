@@ -5,5 +5,5 @@
 
 /* Increase base font size to 150% of original */
 html {
-  font-size: 80% !important;
+  zoom: 150% !important;
 }
