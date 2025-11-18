@@ -41,6 +41,36 @@ await near
 
 An agent should **never** assume `near-api-js` patterns, such as `account.viewFunction` or `utils.format.parseNearAmount`, will work. It should instead rely on the patterns documented in this cookbook, such as `near.view()` and the `near.transaction()` builder.
 
+### Human-Readable Units
+
+`near-kit` accepts human-readable strings directly for amounts and gas:
+
+```typescript
+// Use string literals with units
+await near.transaction("alice.testnet").transfer("bob.testnet", "10.5 NEAR").send();
+
+// Or use the Amount helper for dynamic values
+import { Amount } from "near-kit";
+const deposit = Amount.NEAR(10.5); // "10.5 NEAR"
+await near.transaction("alice.testnet").transfer("bob.testnet", deposit).send();
+```
+
+For displaying balances, use `formatAmount()`:
+
+```typescript
+import { formatAmount } from "near-kit";
+
+const accountDetails = await near.getAccountDetails("alice.testnet");
+const formatted = formatAmount(accountDetails.amount); // "100.50 NEAR"
+
+// Customize formatting
+const custom = formatAmount(accountDetails.amount, {
+  precision: 4,        // Decimal places (default: 2)
+  trimZeros: true,     // Remove trailing zeros (default: false)
+  includeSuffix: false // Exclude " NEAR" suffix (default: true)
+});
+```
+
 ## Installation
 
 To use `near-kit` in a project, it must be added as a dependency.

@@ -116,6 +116,63 @@ If you need the raw yoctoNEAR value, use `near.getAccountDetails()`.
 
 ---
 
+## Amount Utilities
+
+### `Amount` Namespace
+
+Helper functions for creating amount strings programmatically:
+
+```typescript
+import { Amount } from "near-kit";
+
+// Constructors
+Amount.NEAR(10);        // "10 NEAR"
+Amount.NEAR(10.5);      // "10.5 NEAR"
+Amount.NEAR("10.5");    // "10.5 NEAR"
+Amount.yocto(1000000n); // "1000000 yocto"
+Amount.yocto("1000000"); // "1000000 yocto"
+
+// Constants
+Amount.ZERO;      // "0 yocto"
+Amount.ONE_NEAR;  // "1 NEAR"
+Amount.ONE_YOCTO; // "1 yocto"
+```
+
+### `formatAmount()` Function
+
+Converts raw yoctoNEAR to human-readable NEAR:
+
+```typescript
+import { formatAmount } from "near-kit";
+
+// Basic usage
+formatAmount("100000000000000000000000000");
+// "100.00 NEAR"
+
+// With options
+formatAmount("100500000000000000000000000", {
+  precision: 4,        // Number of decimal places (default: 2)
+  trimZeros: true,     // Remove trailing zeros (default: false)
+  includeSuffix: false // Exclude " NEAR" suffix (default: true)
+});
+// "100.5"
+```
+
+### `parseAmount()` Function
+
+Converts human-readable amounts to yoctoNEAR (returns a string):
+
+```typescript
+import { parseAmount } from "near-kit";
+
+parseAmount("10 NEAR");      // "10000000000000000000000000"
+parseAmount("10.5 NEAR");    // "10500000000000000000000000"
+parseAmount("1000 yocto");   // "1000"
+parseAmount(1000n);          // "1000" (bigints are treated as yoctoNEAR)
+```
+
+---
+
 ## `near.getAccountDetails()` Result
 
 Provides low-level details about an account.
