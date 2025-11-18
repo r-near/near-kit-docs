@@ -101,3 +101,94 @@ await keyStore.add("my-secure-account.testnet", keyPair);
 ```
 
 Due to its reliance on native system libraries, this key store is only available in Node.js environments.
+
+### `RotatingKeyStore`
+
+For applications that need to send many concurrent transactions from a single account, `RotatingKeyStore` eliminates nonce collisions by rotating through multiple access keys in round-robin fashion.
+
+```admonish tip title="High-Throughput Applications"
+Use `RotatingKeyStore` when you need to send dozens or hundreds of concurrent transactions from one account. This is ideal for bots, batch processors, and high-volume applications.
+```
+
+**How it works:**
+- Each `transaction()` call uses the next key in rotation
+- Each key has independent nonce tracking via `NonceManager`
+- No nonce collisions = 100% success rate for concurrent transactions
+
+```typescript
+import { RotatingKeyStore, Near } from "near-kit";
+
+// Initialize with multiple keys for one account
+const keyStore = new RotatingKeyStore({
+  "alice.testnet": [
+    "ed25519:key1...",
+    "ed25519:key2...",
+    "ed25519:key3...",
+  ],
+});
+
+const near = new Near({
+  network: "testnet",
+  keyStore,
+});
+
+// Send 100 concurrent transactions - all succeed!
+await Promise.all(
+  Array(100).fill(0).map((_, i) =>
+    near.transaction("alice.testnet")
+      .functionCall("contract.testnet", "process", { id: i })
+      .send()
+  )
+);
+```
+
+**Setting up multiple keys on-chain:**
+
+Before using `RotatingKeyStore`, you need to add the additional access keys to your account:
+
+```typescript
+import { Near, generateKey } from "near-kit";
+
+const near = new Near({
+  network: "testnet",
+  privateKey: "ed25519:existing-key...",
+  defaultSignerId: "alice.testnet",
+});
+
+// Generate and add 2 more keys
+const key2 = generateKey();
+const key3 = generateKey();
+
+await near.transaction("alice.testnet")
+  .addKey(key2.publicKey.toString(), { type: "fullAccess" })
+  .addKey(key3.publicKey.toString(), { type: "fullAccess" })
+  .send();
+
+// Now use all 3 keys with RotatingKeyStore
+const keyStore = new RotatingKeyStore({
+  "alice.testnet": [
+    "ed25519:existing-key...",
+    key2.secretKey,
+    key3.secretKey,
+  ],
+});
+```
+
+**Advanced usage:**
+
+```typescript
+// Add keys dynamically
+const keyStore = new RotatingKeyStore();
+await keyStore.add("alice.testnet", keyPair1);
+await keyStore.add("alice.testnet", keyPair2); // Appends to rotation
+
+// Query rotation state
+const allKeys = await keyStore.getAll("alice.testnet");
+console.log(`Account has ${allKeys.length} keys in rotation`);
+
+const currentIndex = keyStore.getCurrentIndex("alice.testnet");
+console.log(`Next key will be index ${currentIndex % allKeys.length}`);
+
+// Reset rotation to start from first key
+keyStore.resetCounter("alice.testnet");
+```

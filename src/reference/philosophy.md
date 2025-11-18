@@ -153,6 +153,16 @@ await Promise.all([
 
 All three transactions will get unique, sequential nonces and succeed.
 
+#### High-Throughput Scenarios
+
+For applications that need to send dozens or hundreds of concurrent transactions from a single account, consider using [`RotatingKeyStore`](../core-concepts/key-management.md#rotatingkeystore). It eliminates nonce collisions entirely by rotating through multiple access keys, each with independent nonce tracking. This provides:
+
+- **100% success rate** for concurrent transactions (no retries needed)
+- **Better throughput** for high-volume operations
+- **No race conditions** between concurrent transaction builds
+
+Learn more in the [Key Management](../core-concepts/key-management.md#rotatingkeystore) guide.
+
 ### Smart Retry Logic
 
 Interacting with a decentralized network means that sometimes, requests will fail for transient reasons: a node might be temporarily overloaded, a network connection might drop, or a block might not have propagated yet.
