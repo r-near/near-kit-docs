@@ -22,7 +22,7 @@ jobs:
       - name: Setup mdBook
         uses: peaceiris/actions-mdbook@v2
         with:
-          mdbook-version: "latest"
+          mdbook-version: "0.4.52"
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -39,7 +39,7 @@ jobs:
         run: |
           # Only install if not already cached
           command -v mdbook-llms-txt >/dev/null 2>&1 || cargo install --git https://github.com/r-near/mdbook-llms-txt-tools
-          command -v mdbook-admonish >/dev/null 2>&1 || cargo install mdbook-admonish
+          command -v mdbook-admonish >/dev/null 2>&1 || cargo install mdbook-admonish --version 1.20.0
           command -v mdbook-linkcheck >/dev/null 2>&1 || cargo install mdbook-linkcheck
       - name: Build book
         run: RUST_LOG=debug mdbook build
