@@ -15,7 +15,7 @@ additional-css = [
     # custom
     "theme/aha_styles.css",
     "theme/mdbook-admonish-custom.css",
-    "theme/custom.css",
+    "theme/custom.css"
 ]
 no-section-label = true
 git-repository-url = "https://github.com/r-near/near-kit-docs"
@@ -23,7 +23,7 @@ edit-url-template = "https://github.com/r-near/near-kit-docs/edit/main/{path}"
 
 [preprocessor.admonish]
 command = "mdbook-admonish"
-assets_version = "3.1.0"    # do not edit: managed by `mdbook-admonish install`
+assets_version = "3.1.0" # do not edit: managed by `mdbook-admonish install`
 
 [[preprocessor.admonish.custom]]
 directive = "reset"
