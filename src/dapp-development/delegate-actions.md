@@ -17,22 +17,24 @@ Delegate Actions, officially specified in [NEP-366](https://github.com/near/NEPs
 The user-facing part of the flow is creating and signing the delegate action. This is done using the [`transaction()` builder](../transactions/builder.md) followed by the `.delegate()` method instead of `.send()`.
 
 ```typescript
-import { Near } from "near-kit";
+import { Near } from "near-kit"
 
 // User's client, configured with their private key or wallet
 const userNear = new Near({
   network: "testnet",
   privateKey: "ed25519:...", // User's private key
   defaultSignerId: "user.testnet",
-});
+})
 
 // 1. User builds a transaction with the actions they want to perform
 const transaction = userNear
   .transaction("user.testnet")
-  .[functionCall](../transactions/actions.md#functioncall)("guestbook.testnet", "add_message", { text: "Hello from a meta-tx!" });
+  .functionCall("guestbook.testnet", "add_message", {
+    text: "Hello from a meta-tx!",
+  })
 
 // 2. Instead of .send(), the user calls .delegate() to sign it off-chain
-const signedDelegate = await transaction.delegate();
+const signedDelegate = await transaction.delegate()
 
 // 3. The user can now send `signedDelegate` to a relayer's backend API
 //    (e.g., via fetch)
