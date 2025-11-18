@@ -8,7 +8,7 @@ All `near-kit` errors extend the base JavaScript `Error`, so you can use a stand
 
 ```typescript
 import {
-  [Near](./near-instance.md),
+  Near,
   FunctionCallError,
   AccountDoesNotExistError,
   NetworkError,
