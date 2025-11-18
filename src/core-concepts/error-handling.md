@@ -65,7 +65,7 @@ The transaction itself was rejected by the network before it could even get to t
 
 - An invalid account ID (`AccountAlreadyExists`).
 - Trying to use an [access key](./key-management.md) with insufficient permissions.
-- An invalid [nonce](../reference/philosophy.md#automatic-nonce-management) (often handled automatically by `near-kit`).
+- An invalid nonce (often handled automatically by `near-kit`).
 ```
 
 ```admonish info title="AccountDoesNotExistError"
@@ -75,7 +75,7 @@ You tried to interact with an account that hasn't been created yet.
 ```admonish info title="NetworkError"
 The RPC node failed to respond. This can happen if the node is down or your connection is interrupted.
 
-- `error.retryable`: A boolean indicating if you can safely [retry](../reference/philosophy.md#smart-retry-logic) the same operation.
+- `error.retryable`: A boolean indicating if you can safely retry the same operation.
 ```
 
 By handling these typed errors, you can build a much more robust and user-friendly application.

@@ -87,7 +87,7 @@ When this transaction is executed, the `add_message` function on the `guestbook.
 ## Security Considerations
 
 - **Expiration**: Delegate actions expire after a certain block height to prevent them from being replayed indefinitely. By default, `near-kit` sets this to 200 blocks from the current height. You can customize this with the `maxBlockHeight` or `blockHeightOffset` options in the `.delegate()` method.
-- **Nonce**: Each delegate action has a [nonce](../reference/philosophy.md#automatic-nonce-management), just like a regular transaction. `near-kit` automatically fetches and increments the correct nonce for the user's [access key](../core-concepts/key-management.md), preventing replay attacks.
+- **Nonce**: Each delegate action has a nonce, just like a regular transaction. `near-kit` automatically fetches and increments the correct nonce for the user's [access key](../core-concepts/key-management.md), preventing replay attacks.
 - **Receiver ID**: The actions within the delegate action are executed with a specific `receiverId`. The relayer cannot change what contract the user is interacting with.
 
 ```admonish tip title="Key Security Features"

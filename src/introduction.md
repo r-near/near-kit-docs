@@ -17,4 +17,4 @@ Welcome to `near-kit`!
 - **[Full Wallet Support](./frontend-integration/)**: Drop-in integration for popular web wallets via [NEAR Wallet Selector](./frontend-integration/wallet-selector.md) and [HOT Connector](./frontend-integration/hot-connector.md).
 - **[Built-in Sandbox](./testing/sandbox.md)**: A local NEAR blockchain for fast, free, and isolated testing of your application and contracts.
 - **Advanced Capabilities**: Out-of-the-box support for [meta-transactions (NEP-366)](./dapp-development/delegate-actions.md), [message signing (NEP-413)](./dapp-development/message-signing.md), and [type-safe contract interfaces](./transactions/type-safe-contracts.md).
-- **Resilient by Default**: Automatic [nonce management](./reference/philosophy.md#automatic-nonce-management) and [smart retries](./reference/philosophy.md#smart-retry-logic) for network errors are built-in, so you can write cleaner, more reliable code.
+- **Resilient by Default**: Automatic nonce managment and smart retries for network errors are built-in, so you can write cleaner, more reliable code.
