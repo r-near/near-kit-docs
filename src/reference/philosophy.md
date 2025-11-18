@@ -1,172 +1,100 @@
-# Design Philosophy
+# A Note on Philosophy: Why I Built `near-kit`
 
-Blockchain libraries often force you to think about things that shouldn't matter: which JavaScript runtime you're using, how to construct action arrays, or whether an error has the property you need. `near-kit` takes a different approach. It's designed around a few core principles that make working with NEAR feel closer to regular JavaScript development.
+Hey there,
 
-## Write Once, Run Anywhere
+If you're reading this, you're probably trying to figure out if this is the right tool for you. So, instead of a formal "Design Philosophy," I thought I'd just tell you why I built `near-kit` and the problems I was trying to solve for myself.
 
-If you've used `near-api-js` before, you've probably written different code for different environments. Browser apps needed wallet adapters and special setup. Server code used a different pattern. Edge workers and React Native required their own workarounds.
+I started this project after feeling a bit of friction building on NEAR. The existing tools were powerful, but I often found myself wrestling with boilerplate, worrying about subtle but costly mistakes, and spending more time on the plumbing than on the actual product. I wanted a toolkit that felt like a sharp, well-balanced chef's knife—something that felt good in my hand and let me focus on the craft.
 
-`near-kit` works the same everywhere. Here's a simple example:
+This led me to a few core ideas that guide every part of `near-kit`.
 
-```typescript
-import { Near } from "near-kit"
+---
 
-const near = new Near({
-  network: "testnet",
-  privateKey: "ed25519:...",
-})
+## 1. The Common Path Should Be Easy and Obvious
 
-await near.send("alice.testnet", "1")
-```
+Building a transaction shouldn't feel like assembling an engine from a diagram. For 90% of use cases, you're just doing a few simple things in a row. The library should reflect that.
 
-This code runs identically in Node.js, browsers, Cloudflare Workers, Vercel Edge, React Native, Deno, and Bun. There's no environment detection, no conditional imports, and no separate packages.
-
-If you write a transaction builder in your backend and realize you need the same logic in your frontend, you can just import the same module. If you want to move a server function to an edge worker, you can deploy it without changes.
-
-## The Transaction Builder Pattern
-
-Transactions in `near-kit` use a chainable builder pattern. Instead of constructing arrays of actions or passing multiple parameters in a specific order, you build up the transaction step by step:
+My goal was to create a "fluent" API that reads like a story. This led to the `TransactionBuilder`:
 
 ```typescript
-// With near-api-js, you might write:
-const actions = [
-  transactions.functionCall(
-    "increment",
-    {},
-    "30000000000000",
-    "0"
-  ),
-]
-await account.signAndSendTransaction({
-  receiverId: "counter.testnet",
-  actions,
-})
-
-// With near-kit:
-await near
-  .transaction("signer.testnet")
-  .functionCall("counter.testnet", "increment", {})
+// I wanted to be able to write code that looked like this:
+const result = await near
+  .transaction("alice.near")
+  .createAccount("bob.near")
+  .transfer("bob.near", "10 NEAR")
+  .addKey(newPublicKey, { type: "fullAccess" })
   .send()
 ```
 
-This becomes especially helpful when you're building complex transactions with multiple actions:
+Each step is just another method call. You chain them together, and when you're done, you `.send()`. Behind the scenes, it seamlessly handles tricky parts like nonce management and retries, but you don't have to think about it. It’s predictable and hard to mess up.
+
+---
+
+## 2. Prevent the "Stupid Mistake" Tax
+
+In blockchain, a simple mistake—like forgetting a few zeros—can cost real money. I call this the "stupid mistake tax," and I think a good library should do everything it can to help you avoid paying it.
+
+This is why `near-kit` is so opinionated about units. I can't tell you how many times I've second-guessed myself: "is this `NEAR` or `yoctoNEAR`?"
+
+`near-kit` solves this by forcing you to be explicit. It will throw an error if you pass in a plain number for an amount.
 
 ```typescript
-await near
-  .transaction("alice.testnet")
-  .transfer("bob.testnet", "5")
-  .functionCall("contract.testnet", "register", { name: "Alice" })
-  .functionCall("contract.testnet", "notify", { event: "signup" })
-  .send()
+// GOOD: This is clear and unambiguous.
+near.send("bob.near", "1.5 NEAR")
+near.call("contract.id", "method", {}, { gas: "30 Tgas" })
+
+// BAD: This will throw an error, saving you from a potential disaster.
+near.send("bob.near", 1.5)
+// Error: Ambiguous amount. Did you mean "1.5 NEAR"?
 ```
 
-You can read this transaction like a sentence: Alice sends 5 NEAR to Bob, then calls `register` on the contract, then calls `notify`. Each action is clear, and the order is explicit. Because the API is chainable, your editor can autocomplete the available methods at each step.
+It’s a little extra typing, but the peace of mind is worth it. I even took this to the compile-time level using TypeScript, so if you try to pass an invalid key format, your editor will yell at you before you even run the code.
 
-## Type Safety as a Feature
+---
 
-`near-kit` is written in TypeScript, and the type system is designed to catch mistakes before you run your code. If you pass the wrong type of argument or forget a required parameter, your editor will show an error immediately:
+## 3. Solve the Whole Problem, Not Just Part of It
 
-```typescript
-// TypeScript catches these at compile time:
-await near.send("alice.testnet", 123) // Error: expected string
+My frustration didn't stop at just sending transactions. I also got tired of the friction around testing and wallet integration. A library should help you through the entire development lifecycle.
 
-await near.transaction() // Error: accountId required
+**For Testing:** I spent too much time managing third-party libraries with incompatible versions, just to run integration tests. So, I built the `Sandbox`. It’s a simple class that programmatically starts and stops a local NEAR node for you, right from your test files. This has been a game-changer for my own workflow.
 
-const near = new Near({ network: "production" }) // Error: invalid network
-```
+**For dApps:** Connecting to a browser wallet is a very common and often tricky problem. To solve this, I included a `wallets` module with simple adapters for popular libraries like [NEAR Wallet Selector](../frontend-integration/wallet-selector.md) or [HOT Connector](../frontend-integration/hot-connector.md). This turns what can be a multi-hour headache into a single function call.
 
-Error handling is also type-safe. When you check an error with `instanceof`, TypeScript knows which properties are available:
+---
+
+## 4. Clarity and No Magic
+
+A library shouldn't be a "black box." When something goes wrong, you should be able to understand why. I've tried to design `near-kit` to be as transparent as possible, favoring clarity over cleverness.
+
+A great example is how it handles errors. The NEAR RPC can return some cryptic error messages. Instead of just passing those along, `near-kit` systematically parses them into clean, understandable error classes.
+
+So, instead of debugging a generic error like `{"code": -32000, "data": "..."}`, you get a specific, actionable error right in your code:
 
 ```typescript
 try {
-  await near.call("contract.testnet", "method", {})
-} catch (error) {
-  if (error instanceof FunctionCallError) {
-    // TypeScript knows these properties exist
-    console.error(error.panic)        // string
-    console.error(error.logs)         // string[]
-    console.error(error.contractId)   // string
-  } else if (error instanceof NetworkError) {
-    // Different properties for different error types
-    console.error(error.retryable)    // boolean
+  await near.send("non-existent-account.near", "1 NEAR")
+} catch (e) {
+  if (e instanceof AccountDoesNotExistError) {
+    // Now you can handle this specific case!
+    console.log(`The account ${e.accountId} does not exist.`)
   }
 }
 ```
 
-This means you don't need to cast errors to `any` to access their properties, and you won't accidentally access a property that doesn't exist on that error type.
+This commitment to clarity makes debugging easier and helps you build more resilient applications, because you have confidence in what your tools are doing.
 
-## Errors You Can Actually Handle
+---
 
-When something goes wrong on NEAR, the error you get should tell you what happened and give you enough context to handle it. `near-kit` provides typed error classes that include relevant details:
+# What `near-kit` Isn't
 
-```typescript
-try {
-  await near
-    .transaction("alice.testnet")
-    .functionCall("game.testnet", "attack", { target: "bob" })
-    .send()
-} catch (error) {
-  if (error instanceof FunctionCallError) {
-    // The contract panicked. The error includes:
-    console.error(`Contract: ${error.contractId}`)
-    console.error(`Method: ${error.methodName}`)
-    console.error(`Panic: ${error.panic}`)
-    console.error(`Logs:`, error.logs)
+To help you decide if this is the right fit, it's just as important to know what this library _doesn't_ try to be.
 
-    // If the panic message is something like "ERR_NOT_ENOUGH_MANA",
-    // you can show a helpful message to your user
-  }
-}
-```
+- **It's not an infrastructure-grade backend toolkit.** `near-kit` is designed for dApp developers and script writers. While it's robust for these use cases, if your primary job is building a high-availability backend service (like a complex relayer or an RPC load balancer) that requires fine-grained control over network failover policies, you might need a more low-level, specialized library.
 
-Each error type includes the information you'd need to debug or handle that specific case:
+- **It's not a web framework.** `near-kit` is a toolkit for interacting with the NEAR Protocol. It doesn't impose any structure on your application and can be integrated into any project, whether it's built with React, Vue, Svelte, or just plain JavaScript.
 
-- **`FunctionCallError`**: Includes the contract ID, method name, panic message, and any logs the contract emitted before failing.
-- **`AccountDoesNotExistError`**: Includes the account ID that doesn't exist.
-- **`NetworkError`**: Includes a `retryable` boolean so you know whether it makes sense to try again.
-- **`InvalidTransactionError`**: Includes the specific reason the transaction was rejected.
+- **It's not just a minimal wrapper.** The goal isn't just to make RPC calls. The value of `near-kit` comes from the thoughtful abstractions, safety features, and integrated tools that are designed to make your entire development process smoother and safer.
 
-## Under the Hood
+My hope is that when you use `near-kit`, you feel empowered, confident, and maybe even have a little fun.
 
-While the API stays simple, `near-kit` handles some of the more complex blockchain details automatically.
-
-### Automatic Nonce Management
-
-On NEAR, every transaction must have a unique nonce (a sequentially increasing number) for a given access key. If you try to send two transactions from the same account at the same time, they might end up with the same nonce, causing one of them to fail with an `InvalidNonce` error.
-
-`near-kit` maintains an internal nonce manager that:
-1. Fetches the current nonce for a key from the blockchain.
-2. Caches it in memory.
-3. Atomically increments the nonce for every new transaction.
-4. Detects `InvalidNonce` errors from the network.
-5. If a nonce error occurs, invalidates its cache, fetches the correct nonce, and retries the transaction.
-
-This means you can safely send multiple transactions concurrently:
-
-```typescript
-await Promise.all([
-  near.send("bob.testnet", "1"),
-  near.send("charlie.testnet", "1"),
-  near.send("dave.testnet", "1"),
-])
-```
-
-All three transactions will get unique, sequential nonces and succeed.
-
-#### High-Throughput Scenarios
-
-For applications that need to send dozens or hundreds of concurrent transactions from a single account, consider using [`RotatingKeyStore`](../core-concepts/key-management.md#rotatingkeystore). It eliminates nonce collisions entirely by rotating through multiple access keys, each with independent nonce tracking. This provides:
-
-- **100% success rate** for concurrent transactions (no retries needed)
-- **Better throughput** for high-volume operations
-- **No race conditions** between concurrent transaction builds
-
-Learn more in the [Key Management](../core-concepts/key-management.md#rotatingkeystore) guide.
-
-### Smart Retry Logic
-
-Interacting with a decentralized network means that sometimes, requests will fail for transient reasons: a node might be temporarily overloaded, a network connection might drop, or a block might not have propagated yet.
-
-`near-kit` includes a retry mechanism with exponential backoff for all RPC calls. If a request fails with a retryable error (like `503 Service Unavailable` or `429 Too Many Requests`), the library will wait and try again several times before failing.
-
-This makes your application more resilient to temporary network issues without requiring you to write retry loops yourself.
+Happy building.
