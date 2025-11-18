@@ -42,7 +42,7 @@ jobs:
           command -v mdbook-admonish >/dev/null 2>&1 || cargo install mdbook-admonish
           command -v mdbook-linkcheck >/dev/null 2>&1 || cargo install mdbook-linkcheck
       - name: Build book
-        run: mdbook build
+        run: RUST_LOG=debug mdbook build
 
       - name: Copy the LLMs txt files
         run: |
