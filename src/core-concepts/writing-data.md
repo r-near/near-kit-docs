@@ -69,4 +69,4 @@ While these shortcuts are convenient, you should use the full [Transaction Build
 
 - Perform multiple actions atomically (e.g., create an account AND transfer funds to it). See the `TransactionBuilder` docs for important details on the [boundaries of atomicity](../transactions/builder.md#atomic-by-nature-within-a-transaction).
 - Use more advanced actions like [`addKey`](../reference/actions.md#addkey) or [`deployContract`](../reference/actions.md#deploycontract).
-- Create meta-transactions using [`.delegate()`](../dapp-development/delegate-actions.md).
+- Create meta-transactions using [`.delegate()`](../dapp-development/delegate-actions.md), which returns both the structured action and an encoded payload for relayers.

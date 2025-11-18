@@ -232,7 +232,7 @@ const result = await near
 
 ### Pattern 11: Create and Submit a Delegate Action (for Meta-Transactions)
 
-Use `.delegate()` instead of `.send()` to sign an action off-chain. The result can be sent to a relayer.
+Use `.delegate()` instead of `.send()` to sign an action off-chain. The result includes both the structured action and an encoded payload that can be forwarded to a relayer.
 
 ```typescript
 import { Near } from "near-kit";
@@ -241,12 +241,13 @@ import { Near } from "near-kit";
 const userNear = new Near({ network: "testnet", privateKey: "...", defaultSignerId: "user.testnet" });
 
 // User signs a function call off-chain (no gas cost)
-const signedDelegate = await userNear
+const { signedDelegateAction, payload, format } = await userNear
   .transaction("user.testnet")
   .functionCall("guestbook.testnet", "add_message", { text: "Hello from meta-tx!" })
   .delegate();
-
-// `signedDelegate` can now be sent to a relayer service.
+// `payload` (base64 by default) can now be sent to a relayer service.
+// `signedDelegateAction` remains available locally for wallet UI/validation.
+// Need raw bytes? Pass { payloadFormat: "bytes" } to .delegate().
 ```
 
 ### Pattern 12: Submit a Signed Delegate Action (as a Relayer)
@@ -254,11 +255,13 @@ const signedDelegate = await userNear
 A relayer uses `.signedDelegateAction()` to submit the user's action to the network, paying the gas on their behalf.
 
 ```typescript
-import { Near } from "near-kit";
-// Assume `signedDelegate` was received from a user.
+import { Near, decodeSignedDelegateAction } from "near-kit";
+// Assume `payload` (base64 string) was received from a user.
 
 // Relayer's client
 const relayerNear = new Near({ network: "testnet", privateKey: "...", defaultSignerId: "relayer.testnet" });
+
+const signedDelegate = decodeSignedDelegateAction(payload);
 
 // Relayer wraps the user's action and sends it
 const result = await relayerNear

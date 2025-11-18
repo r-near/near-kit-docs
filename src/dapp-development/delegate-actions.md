@@ -7,9 +7,9 @@ Delegate Actions, officially specified in [NEP-366](https://github.com/near/NEPs
 ## The Core Idea
 
 1.  **User Creates Actions**: The user decides what they want to do (e.g., call a contract method, transfer tokens).
-2.  **User Signs Off-Chain**: The user signs these actions with their key, but **does not** send them to the blockchain. This signature is free and happens off-chain. The result is a `SignedDelegateAction`.
-3.  **User Sends to Relayer**: The user sends the `SignedDelegateAction` to a relayer service (e.g., via a standard HTTPS POST request).
-4.  **Relayer Submits On-Chain**: The relayer wraps the user's `SignedDelegateAction` into its own [transaction](../transactions/builder.md), signs it with its own key, and submits it to the blockchain. The relayer pays the [gas fee](../core-concepts/units.md).
+2.  **User Signs Off-Chain**: The user signs these actions with their key, but **does not** send them to the blockchain. This signature is free and happens off-chain. The result is an object containing the structured `SignedDelegateAction` plus an encoded `payload` that is safe to transport.
+3.  **User Sends to Relayer**: The user sends the `payload` (a base64 string by default) to a relayer service (e.g., via a standard HTTPS POST request). The structured data can still be used locally for wallet UI/validation.
+4.  **Relayer Submits On-Chain**: The relayer decodes the payload back into a `SignedDelegateAction`, wraps it in its own [transaction](../transactions/builder.md), signs the transaction with its own key, and submits it to the blockchain. The relayer pays the [gas fee](../core-concepts/units.md).
 5.  **Blockchain Verification**: The NEAR protocol verifies both the relayer's signature and the original user's signature before executing the actions as the user.
 
 ## Creating a Delegate Action
@@ -34,26 +34,29 @@ const transaction = userNear
   })
 
 // 2. Instead of .send(), the user calls .delegate() to sign it off-chain
-const signedDelegate = await transaction.delegate()
+const { signedDelegateAction, payload, format } = await transaction.delegate()
 
-// 3. The user can now send `signedDelegate` to a relayer's backend API
-//    (e.g., via fetch)
-// await fetch('https://my-relayer.com/submit', {
-//   method: 'POST',
-//   headers: { 'Content-Type': 'application/json' },
-//   body: JSON.stringify(signedDelegate),
-// });
+// 3. Send the encoded payload (base64 by default) to a relayer's backend API
+await fetch("https://my-relayer.com/submit", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ payload }),
+})
+
+console.log("Structured action for UI/logging:", signedDelegateAction)
+console.log("Encoded payload format:", format)
+
+// Need raw bytes instead? call .delegate({ payloadFormat: "bytes" })
 ```
 
-The `signedDelegate` object contains all the information the relayer needs to submit the transaction.
+The `signedDelegateAction` object contains all the information a wallet or UI needs, while the encoded `payload` is safe to ship over HTTP. Pass `{ payloadFormat: "bytes" }` when calling `.delegate()` if you prefer a raw `Uint8Array` for binary transports.
 
 ## Submitting a Delegate Action (Relayer)
 
 The relayer's job is to take the `SignedDelegateAction` from the user, wrap it in a new transaction, and send it.
 
 ```typescript
-import { Near } from "near-kit"
-import type { SignedDelegateAction } from "near-kit"
+import { Near, decodeSignedDelegateAction } from "near-kit"
 
 // Relayer's client, configured with its own key for paying gas
 const relayerNear = new Near({
@@ -62,11 +65,13 @@ const relayerNear = new Near({
   defaultSignerId: "relayer.testnet",
 })
 
-// Assume this is an HTTP endpoint that receives the delegate action from the user
-async function handleSubmit(signedDelegate: SignedDelegateAction) {
+// Assume this is an HTTP endpoint that receives the payload from the user
+async function handleSubmit(payload: string) {
   console.log(
     "Received delegate action from user, submitting to the network..."
   )
+
+  const signedDelegate = decodeSignedDelegateAction(payload)
 
   // The relayer creates a transaction where its own account is the signer
   const result = await relayerNear
@@ -83,6 +88,10 @@ async function handleSubmit(signedDelegate: SignedDelegateAction) {
 ```
 
 When this transaction is executed, the `add_message` function on the `guestbook.testnet` contract will see `user.testnet` as the `predecessor_account_id`, even though `relayer.testnet` paid for the gas.
+
+```admonish info title="Transport formats"
+`.delegate()` returns `{ payload, format, signedDelegateAction }`. The default format is `"base64"`, which is safe for JSON/HTTP. Pass `{ payloadFormat: "bytes" }` when calling `.delegate()` to receive a `Uint8Array` payload instead.
+```
 
 ## Security Considerations
 

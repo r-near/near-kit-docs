@@ -55,7 +55,7 @@ This key store reads and writes key files in a format compatible with `near-cli`
 Keys are stored in `~/.near-credentials/{networkId}/{accountId}.json`.
 
 ```typescript
-import { FileKeyStore } from "near-kit/keys"; // Note the sub-path import
+import { FileKeyStore } from "near-kit/keys/file"; // Note the sub-path import
 import { Near } from "near-kit";
 
 // This will use keys from ~/.near-credentials/testnet/
@@ -85,7 +85,7 @@ For the highest level of security on a server or local machine, the `NativeKeySt
 Keys are encrypted by the OS and are often protected by the user's login password or biometrics.
 
 ```typescript
-import { NativeKeyStore } from "near-kit/keys"; // Note the sub-path import
+import { NativeKeyStore } from "near-kit/keys/native"; // Note the sub-path import
 import { Near } from "near-kit";
 
 // Keys will be stored securely in the OS keyring under the "NEAR Credentials" service
