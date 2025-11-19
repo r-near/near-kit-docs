@@ -59,6 +59,56 @@
             const default_light_theme = "{{ default_theme }}";
             const default_dark_theme = "{{ preferred_dark_theme }}";
         </script>
+        <!-- Fix for clean URLs (Cloudflare Pages) - must load before toc.js -->
+        <script>
+        // Override the custom element to fix active link detection for clean URLs
+        (function() {
+            const originalDefine = window.customElements.define;
+            window.customElements.define = function(name, constructor, options) {
+                if (name === 'mdbook-sidebar-scrollbox') {
+                    const OriginalClass = constructor;
+                    const PatchedClass = class extends OriginalClass {
+                        connectedCallback() {
+                            super.connectedCallback();
+
+                            // Re-run the active link detection with clean URL support
+                            let current_page = document.location.href.toString().split("#")[0].split("?")[0];
+                            if (current_page.endsWith("/")) {
+                                current_page += "index.html";
+                            }
+
+                            var links = Array.prototype.slice.call(this.querySelectorAll("a"));
+                            for (var i = 0; i < links.length; ++i) {
+                                var link = links[i];
+
+                                // Support both .html and clean URLs
+                                var linkHrefWithoutHtml = link.href.replace(/\.html$/, '');
+                                var currentPageWithoutHtml = current_page.replace(/\.html$/, '');
+
+                                if (link.href === current_page || linkHrefWithoutHtml === currentPageWithoutHtml || (i === 0 && typeof path_to_root !== 'undefined' && path_to_root === "" && current_page.endsWith("/index.html"))) {
+                                    link.classList.add("active");
+                                    var parent = link.parentElement;
+                                    if (parent && parent.classList.contains("chapter-item")) {
+                                        parent.classList.add("expanded");
+                                    }
+                                    while (parent) {
+                                        if (parent.tagName === "LI" && parent.previousElementSibling) {
+                                            if (parent.previousElementSibling.classList.contains("chapter-item")) {
+                                                parent.previousElementSibling.classList.add("expanded");
+                                            }
+                                        }
+                                        parent = parent.parentElement;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    return originalDefine.call(this, name, PatchedClass, options);
+                }
+                return originalDefine.call(this, name, constructor, options);
+            };
+        })();
+        </script>
         <!-- Start loading toc.js asap -->
         <script src="{{ resource "toc.js" }}"></script>
     </head>
