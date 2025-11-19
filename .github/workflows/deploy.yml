@@ -46,10 +46,11 @@ jobs:
       - name: Build book
         run: RUST_LOG=debug mdbook build
 
-      - name: Copy the LLMs txt files
+      - name: Copy the LLMs txt files and Markdown sources to the output
         run: |
           cp ./book/llms-txt/llms.txt ./book/html/llms.txt
           cp ./book/llms-txt-full/llms-full.txt ./book/html/llms-full.txt
+          cp -R src/* book/html/
 
       - name: Deploy to Cloudflare Workers (Static Site)
         env:
