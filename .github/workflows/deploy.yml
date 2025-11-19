@@ -19,6 +19,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Install cargo-binstall
         uses: cargo-bins/cargo-binstall@main
 
@@ -49,8 +52,7 @@ jobs:
           cp ./book/llms-txt-full/llms-full.txt ./book/html/llms-full.txt
 
       - name: Deploy to Cloudflare Workers (Static Site)
-        uses: cloudflare/wrangler-action@v3
-        with:
-          wranglerVersion: "4.47.0"
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: bunx wrangler deploy
