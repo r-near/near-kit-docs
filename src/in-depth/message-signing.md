@@ -17,10 +17,10 @@ Use `near.signMessage` to request a signature.
 You **must** generate a random nonce. This ensures that a captured signature cannot be re-used by an attacker later.
 
 ```typescript
-import { Near, generateNep413Nonce } from "near-kit"
+import { Near, generateNonce } from "near-kit"
 
-// 1. Generate a 32-byte random buffer
-const nonce = generateNep413Nonce()
+// 1. Generate a random 32-byte nonce with embedded timestamp
+const nonce = generateNonce()
 
 // 2. Request Signature
 const signedMessage = await near.signMessage({
@@ -34,25 +34,20 @@ await fetch("/api/login", {
   method: "POST",
   body: JSON.stringify({
     signedMessage,
-    nonce: Array.from(nonce), // Send the raw nonce bytes
+    nonce: Array.from(nonce), // Convert Uint8Array to array for JSON
   }),
 })
 ```
 
-```admonish tip title="Handling Binary Data in JSON"
-`JSON.stringify` cannot handle raw `Uint8Array` buffers. Note how we convert `nonce` to `Array.from(nonce)` in the example above. If you try to send the raw buffer, the backend will receive an empty object.
-```
-
 ## 2. The Server (Backend)
 
-On your server, use `verifyNep413Signature`. This function performs the cryptographic math to ensure the signature is valid for the claimed account.
+**Automatic Expiration:** Nonces include an embedded timestamp. Signatures older than 5 minutes are automatically rejected, limiting the replay attack window.
 
 ```typescript
 import { verifyNep413Signature } from "near-kit"
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { signedMessage, nonce } = req.body
-
   // Reconstruct nonce buffer from the JSON array
   const nonceBuffer = Buffer.from(nonce)
 
@@ -64,7 +59,7 @@ app.post("/api/login", (req, res) => {
   })
 
   if (!isValid) {
-    return res.status(401).send("Invalid Signature")
+    return res.status(401).send("Invalid or expired signature")
   }
 
   // 2. (Recommended) Check for Replays
@@ -74,6 +69,13 @@ app.post("/api/login", (req, res) => {
   console.log(`User verified: ${signedMessage.accountId}`)
   res.send({ token: "session_token_123" })
 })
+```
+
+Customize expiration window if needed:
+
+```typescript
+// Accept signatures up to 10 minutes old
+verifyNep413Signature(signedMessage, params, { maxAge: 10 * 60 * 1000 })
 ```
 
 ```admonish warning title="Security Critical: Replay Attacks"
