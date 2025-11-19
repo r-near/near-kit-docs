@@ -31,4 +31,5 @@
 - [Reference]()
   - [Action Reference](./reference/actions.md)
   - [Configuration Options](./reference/configuration.md)
+  - [Data Structures](./reference/data-structures.md)
   - [For AI Agents](./reference/ai-integration.md)
