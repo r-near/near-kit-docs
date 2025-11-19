@@ -1,0 +1,54 @@
+# Testing with Sandbox
+
+Don't rely on Testnet for integration tests. It's slow, you need a faucet, and other people can mess up your state. `near-kit` includes a built-in **Sandbox** manager that runs a local NEAR node for you.
+
+## Setup
+
+We recommend using a test runner like `bun:test`, `jest`, or `vitest`.
+
+```typescript
+import { Near } from "near-kit"
+import { Sandbox } from "near-kit/sandbox"
+import { beforeAll, afterAll, test, expect } from "bun:test"
+
+let sandbox: Sandbox
+let near: Near
+
+// 1. Start Sandbox
+beforeAll(async () => {
+  // This downloads a NEAR binary and starts a node locally
+  sandbox = await Sandbox.start()
+
+  // near-kit automatically configures the RPC and
+  // loads the root account key for you.
+  near = new Near({ network: sandbox })
+})
+
+// 2. Stop Sandbox
+afterAll(async () => {
+  if (sandbox) await sandbox.stop()
+})
+
+// 3. Write Tests
+test("can create account", async () => {
+  const newAccount = `test.${sandbox.rootAccount.id}`
+
+  await near
+    .transaction(sandbox.rootAccount.id)
+    .createAccount(newAccount)
+    .send()
+
+  const exists = await near.accountExists(newAccount)
+  expect(exists).toBe(true)
+})
+```
+
+## Pre-Funded Accounts
+
+The sandbox comes with one "Root Account" (`test.near`) that has a massive balance. Use this account to create sub-accounts for your tests.
+
+```typescript
+const root = sandbox.rootAccount
+console.log(root.id) // "test.near"
+console.log(root.secretKey) // "ed25519:..."
+```
