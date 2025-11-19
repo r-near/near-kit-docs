@@ -34,6 +34,7 @@ color = "#9e9e9e"          # same as "quote"
 collapsible = true
 
 [output.linkcheck]
+exclude = ['llms\.txt$', 'llms-full\.txt$']
 
 [output.llms-txt]
 document_root_uri = "https://kit.near.tools"
