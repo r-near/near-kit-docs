@@ -20,9 +20,7 @@ Controls which NEAR network to connect to.
     ```typescript
     {
       networkId: "my-private-net",
-      rpcUrl: "http://127.0.0.1:3030",
-      walletUrl: "...", // Optional
-      helperUrl: "..."  // Optional
+      rpcUrl: "http://127.0.0.1:3030"
     }
     ```
   - **Sandbox**: Passing a `Sandbox` instance automatically configures RPC and the root account key.
