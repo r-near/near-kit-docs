@@ -6,5 +6,12 @@
     },
     "observability": {
         "enabled": false
-    }
+    },
+    "routes": [
+        {
+            "pattern": "kit.near.tools",
+            "custom_domain": true
+        }
+    ],
+    "workers_dev": false
 }
