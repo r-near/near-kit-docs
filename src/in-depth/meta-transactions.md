@@ -20,15 +20,11 @@ It returns two properties:
 - `payload`: A Base64-encoded string. This is what you send to the server.
 
 ```typescript
-// 1. Build the transaction
-const transaction = userNear
+// 1. Delegate (builds and signs the transaction off-chain)
+const { signedDelegateAction, payload } = userNear
   .transaction("user.near")
   .functionCall("game.near", "move", { x: 1, y: 2 })
-
-// 2. Sign it off-chain
-const { signedDelegateAction, payload } = await transaction.delegate({
-  blockHeightOffset: 100, // Optional: Expire after ~100 blocks
-})
+  .delegate()
 
 // Inspect locally (Typed Object)
 console.log("User signed for:", signedDelegateAction.delegateAction.receiverId)
