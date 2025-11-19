@@ -91,20 +91,33 @@ Removes an access key.
 
 ## Global Contracts
 
-### `.publishContract(code, publisherId?)`
+### `.publishContract(code, options?)`
 
 Publishes contract code to the global registry so others can deploy it by reference.
 
 - **code**: `Uint8Array` - The Wasm bytes.
-- **publisherId**: `string` - (Optional) If provided, creates a _mutable_ reference (updatable by publisher). If omitted, creates an _immutable_ reference (by code hash).
+- **options**: `object` - (Optional) Configuration for how the contract is identified:
+  - `identifiedBy`: `"hash" | "account"` - How the contract is referenced:
+    - `"account"` (default): Updatable by signer, identified by signer's account ID
+    - `"hash"`: Immutable, identified by code hash
+
+**Examples:**
+
+```typescript
+// Updatable contract (default) - identified by your account
+.publishContract(wasm)
+
+// Immutable contract - identified by hash
+.publishContract(wasm, { identifiedBy: "hash" })
+```
 
 ### `.deployFromPublished(reference)`
 
 Deploys contract code that was previously published to the registry. This saves gas by avoiding uploading the full Wasm bytes.
 
 - **reference**: One of:
-  - `{ codeHash: string }` - Base58 hash of an immutable contract.
-  - `{ accountId: string }` - Account ID of a mutable contract publisher.
+  - `{ accountId: string }` - Account ID of the publisher (for updatable contracts)
+  - `{ codeHash: string }` - Base58 hash of an immutable contract
 
 ## Advanced / Meta-Transactions
 

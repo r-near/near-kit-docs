@@ -13,9 +13,31 @@ On NEAR, typically every smart contract account holds its own copy of the Wasm b
 
 Publishing requires a storage deposit proportional to the size of your Wasm file (approx 1 NEAR per 100KB).
 
+### Updatable Contracts (Default)
+
+By default, published contracts are identified by **your account ID**. This allows you to update the code later by publishing again. All users who deployed referencing your account will automatically use the latest version you published.
+
+```typescript
+import { readFileSync } from "fs"
+
+const wasm = readFileSync("./my-token.wasm")
+
+// Publish updatable contract (identified by your account)
+await near.transaction("factory.near").publishContract(wasm).send()
+
+// Later, you can update it:
+const updatedWasm = readFileSync("./my-token-v2.wasm")
+await near
+  .transaction("factory.near")
+  .publishContract(updatedWasm) // Overwrites previous version
+  .send()
+```
+
+Users deploying with `{ accountId: "factory.near" }` will always get your latest published version.
+
 ### Immutable Contracts (Trustless)
 
-If you publish without a specific publisher ID, the code is indexed by its **SHA-256 hash**. It can never be changed. This is ideal for trustless protocols.
+For trustless protocols or when you want guaranteed immutability, publish the code identified by its **SHA-256 hash**. It can never be changed.
 
 ```typescript
 import { readFileSync } from "fs"
@@ -24,52 +46,48 @@ import { createHash } from "crypto" // Standard Node.js module
 const wasm = readFileSync("./my-token.wasm")
 
 // 1. Calculate the hash locally
-// near-kit accepts the raw Buffer/Uint8Array
 const codeHash = createHash("sha256").update(wasm).digest()
 
-// 2. Publish the code
-await near.transaction("deployer.near").publishContract(wasm).send()
-
-console.log("Contract published!")
-```
-
-### Mutable Contracts (Updatable)
-
-If you associate the code with an `accountId`, you can update the code later by running `publishContract` again. Users who deploy referencing your Account ID will always get the _latest_ version you published.
-
-```typescript
+// 2. Publish as immutable (identified by hash)
 await near
-  .transaction("factory.near")
-  .publishContract(wasm, "factory.near") // Associate with this account
+  .transaction("deployer.near")
+  .publishContract(wasm, { identifiedBy: "hash" })
   .send()
+
+console.log("Immutable contract published!")
+console.log("Hash:", codeHash.toString("base64"))
 ```
 
 ## 2. Deploying by Reference
 
 To deploy, use `deployFromPublished` instead of `deployContract`. This action is extremely cheap because it uses almost no bandwidth or new storage.
 
-### Deploying from Hash (Immutable)
+### Deploying from Account (Updatable)
 
-```typescript
-const codeHash = "5FzD8..." // The hash from Step 1
-
-await near
-  .transaction("user.near")
-  .createAccount("token.user.near")
-  .transfer("token.user.near", "1 NEAR") // Storage for state, not code!
-  .deployFromPublished({ codeHash })
-  .functionCall("token.user.near", "init", { supply: "1000" })
-  .send()
-```
-
-### Deploying from Account (Mutable)
-
-This deploys whatever code `factory.near` has currently published.
+This deploys whatever code `factory.near` has currently published. If they update the contract later, you'll automatically get the latest version.
 
 ```typescript
 await near
   .transaction("user.near")
   .createAccount("dao.user.near")
+  .transfer("dao.user.near", "1 NEAR") // Storage for state, not code!
   .deployFromPublished({ accountId: "factory.near" })
+  .functionCall("dao.user.near", "init", {})
+  .send()
+```
+
+### Deploying from Hash (Immutable)
+
+For contracts published with `identifiedBy: "hash"`, reference them by their SHA-256 hash:
+
+```typescript
+const codeHash = "5FzD8..." // Base58-encoded hash from publishing
+
+await near
+  .transaction("user.near")
+  .createAccount("token.user.near")
+  .transfer("token.user.near", "1 NEAR")
+  .deployFromPublished({ codeHash })
+  .functionCall("token.user.near", "init", { supply: "1000" })
   .send()
 ```
