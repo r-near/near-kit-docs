@@ -32,4 +32,4 @@ Whether you are writing a backend script, a frontend React dApp, or an integrati
 
 ## What's Next?
 
-Ready to write some code? Jump to the [Quickstart](./quickstart.md).
+Ready to write some code? Jump to the [Quickstart](./start-here/quickstart.md).
