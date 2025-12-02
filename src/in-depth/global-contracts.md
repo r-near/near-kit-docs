@@ -91,3 +91,52 @@ await near
   .functionCall("token.user.near", "init", { supply: "1000" })
   .send()
 ```
+
+## 3. Deterministic Account IDs (NEP-616)
+
+**NEP-616** enables deploying contracts to deterministic addresses (starting with `0s`) derived from their initialization state. Perfect for sharded contract designs where you deploy many instances of the same contract.
+
+### Deploying with StateInit
+
+```typescript
+import { deriveAccountId } from "near-kit"
+
+// Deploy to deterministic address (auto-derived from state)
+await near
+  .transaction("alice.near")
+  .stateInit({
+    code: { accountId: "publisher.near" },
+    data: new Map([["owner", "alice.near"]]),
+    deposit: "1 NEAR",
+  })
+  .send()
+
+// If already deployed, deposit is refunded automatically
+```
+
+The account ID is derived as: `"0s" + hex(keccak256(borsh(state_init))[12..32])`
+
+### Computing Addresses
+
+```typescript
+// Derive the address without deploying
+const accountId = deriveAccountId({
+  code: { accountId: "publisher.near" },
+  data: new Map([["owner", "alice.near"]]),
+})
+// => "0s1234567890abcdef1234567890abcdef12345678"
+
+// Check if an account is deterministic
+isDeterministicAccountId("0s123...") // true
+isDeterministicAccountId("alice.near") // false
+```
+
+### Why Use This?
+
+- **Anyone can deploy:** Since addresses are deterministic, anyone can pay to deploy if it doesn't exist
+- **Sharded contracts:** Deploy many instances with predictable addresses
+- **Code verification:** Verify that another contract is running specific code
+
+```admonish info title="Learn More"
+See [NEP-616](https://github.com/near/NEPs/blob/master/neps/nep-0616.md) for the full specification.
+```

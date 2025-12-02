@@ -44,6 +44,26 @@ Deploys Wasm code to an account. If the account already has a contract, it will 
 - **accountId**: `string` - The account to deploy to.
 - **code**: `Uint8Array` - The raw bytes of the compiled Wasm file.
 
+### `.stateInit(stateInit, options?)`
+
+Deploys a contract to a deterministic account ID (NEP-616). The address is auto-derived from the initialization state. Idempotent—refunds if already deployed.
+
+- **stateInit**: `object`
+  - `code`: `{ accountId: string } | { codeHash: string }` - Global contract reference
+  - `data`: `Map<string, string>` - (Optional) Initial storage
+  - `deposit`: `Amount` - Storage cost reserve
+- **options**: `{ refundTo?: string }` - (Optional) Custom refund recipient
+
+```typescript
+.stateInit({
+  code: { accountId: "publisher.near" },
+  data: new Map([["owner", "alice.near"]]),
+  deposit: "1 NEAR",
+})
+```
+
+See [Global Contracts](/in-depth/global-contracts.md#3-deterministic-account-ids-nep-616).
+
 ## Account Management
 
 ### `.createAccount(accountId)`
