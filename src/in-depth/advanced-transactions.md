@@ -122,13 +122,13 @@ To unstake, you typically need to call function methods (`unstake`, `withdraw`) 
 
 ## 5. Deleting Accounts
 
-You can delete an account to recover its storage rent (the NEAR locked to pay for its data). You must specify a "Beneficiary" who receives the remaining funds.
+You can delete an account to recover its storage rent (the NEAR locked to pay for its data). The account passed to `.transaction()` is the account being deleted, and the `beneficiary` receives the remaining NEAR balance.
 
 ```typescript
 // Delete 'old-account.alice.near' and send all funds to 'alice.near'
 await near
   .transaction("old-account.alice.near")
-  .deleteAccount("alice.near")
+  .deleteAccount({ beneficiary: "alice.near" })
   .send()
 ```
 

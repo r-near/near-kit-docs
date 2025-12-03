@@ -72,11 +72,19 @@ Creates a new account. This is often chained with `.transfer` (to fund it) and `
 
 - **accountId**: `string` - The full ID of the new account (must be a sub-account of the signer).
 
-### `.deleteAccount(beneficiaryId)`
+### `.deleteAccount({ beneficiary })`
 
-Deletes the signer's account and sends all remaining state rental funds to the `beneficiaryId`.
+Deletes the transaction receiver's account and sends all remaining funds to the beneficiary.
 
-- **beneficiaryId**: `string` - The account that receives the remaining NEAR.
+- **beneficiary**: `string` - The account that receives the remaining NEAR balance.
+
+```typescript
+// Delete 'old-account.alice.near' and send remaining funds to 'alice.near'
+await near
+  .transaction("old-account.alice.near")
+  .deleteAccount({ beneficiary: "alice.near" })
+  .send()
+```
 
 ## Access Keys
 
