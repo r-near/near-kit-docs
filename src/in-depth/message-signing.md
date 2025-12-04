@@ -39,7 +39,7 @@ await fetch("/api/login", {
 })
 ```
 
-The `signature` field is base58 encoded and includes the key type prefix (e.g. `ed25519:...`). Send it unchanged to your backend.
+The `signature` field is base64 encoded per the NEP-413 specification. Send it unchanged to your backend.
 
 ## 2. The Server (Backend)
 
@@ -109,8 +109,8 @@ The `SignedMessage` object returned by the client and sent to the server looks l
 type SignedMessage = {
   accountId: string // "alice.near"
   publicKey: string // "ed25519:..."
-  signature: string // Base58 signature with key prefix (e.g. "ed25519:...")
+  signature: string // Base64-encoded signature per NEP-413 spec
 }
 ```
 
-`near.signMessage` returns a base58-encoded signature prefixed with the key type (Ed25519 or Secp256k1). `verifyNep413Signature` also accepts legacy base64 or unprefixed base58 signatures for backward compatibility, but new clients should keep the prefixed base58 string intact when sending it to the backend.
+`near.signMessage` returns a base64-encoded signature as specified in NEP-413. `verifyNep413Signature` also accepts legacy base58 signatures (with or without key type prefix) for backward compatibility.
