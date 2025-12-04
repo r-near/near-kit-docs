@@ -60,7 +60,34 @@ await near
 - **Gas:** Defaults to 30 Tgas. Increase this for complex calculations.
 - **Deposit:** Defaults to 0. Required if the contract needs to pay for storage or if you are transferring value to a contract.
 
-## 4. Shortcuts
+## 4. Working with Amounts (Dynamic Values)
+
+For dynamic calculations, use the `Amount` helper instead of manually constructing strings:
+
+```typescript
+import { Amount } from "near-kit"
+
+// Dynamic NEAR amounts
+const basePrice = 5
+const quantity = 2
+await near.send("bob.near", Amount.NEAR(basePrice * quantity)) // "10 NEAR"
+
+// Fractional amounts
+await near.send("bob.near", Amount.NEAR(10.5)) // "10.5 NEAR"
+
+// YoctoNEAR (10^-24 NEAR) for precise calculations
+await near.send("bob.near", Amount.yocto(1000000n)) // "1000000 yocto"
+
+// Or pass bigint directly (treated as yoctoNEAR)
+await near.send("bob.near", 1000000n)
+```
+
+**Constants:**
+- `Amount.ZERO` → `"0 yocto"`
+- `Amount.ONE_NEAR` → `"1 NEAR"`
+- `Amount.ONE_YOCTO` → `"1 yocto"`
+
+## 5. Shortcuts
 
 For simple, single-action transactions, `near-kit` provides shortcuts. These are just syntax sugar around the builder.
 
@@ -72,7 +99,7 @@ await near.send("bob.near", "5 NEAR")
 await near.call("counter.near", "increment", {})
 ```
 
-## 5. Inspecting the Result
+## 6. Inspecting the Result
 
 The `.send()` method returns a `FinalExecutionOutcome` object. This contains everything that happened on-chain.
 
@@ -96,7 +123,7 @@ if (result.status.SuccessValue) {
 }
 ```
 
-## 6. Execution Speed (WaitUntil)
+## 7. Execution Speed (WaitUntil)
 
 By default, `.send()` waits until the transaction is "Optimistically Executed" (usually 1-2 seconds). You can change this behavior.
 
