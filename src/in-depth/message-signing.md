@@ -39,6 +39,8 @@ await fetch("/api/login", {
 })
 ```
 
+The `signature` field is base58 encoded and includes the key type prefix (e.g. `ed25519:...`). Send it unchanged to your backend.
+
 ## 2. The Server (Backend)
 
 **Automatic Expiration:** Nonces include an embedded timestamp. Signatures older than 5 minutes are automatically rejected, limiting the replay attack window.
@@ -92,6 +94,8 @@ The `SignedMessage` object returned by the client and sent to the server looks l
 type SignedMessage = {
   accountId: string // "alice.near"
   publicKey: string // "ed25519:..."
-  signature: string // Base64 encoded signature
+  signature: string // Base58 signature with key prefix (e.g. "ed25519:...")
 }
 ```
+
+`near.signMessage` returns a base58-encoded signature prefixed with the key type (Ed25519 or Secp256k1). `verifyNep413Signature` also accepts legacy base64 or unprefixed base58 signatures for backward compatibility, but new clients should keep the prefixed base58 string intact when sending it to the backend.
