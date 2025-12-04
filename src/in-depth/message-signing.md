@@ -46,19 +46,25 @@ The `signature` field is base58 encoded and includes the key type prefix (e.g. `
 **Automatic Expiration:** Nonces include an embedded timestamp. Signatures older than 5 minutes are automatically rejected, limiting the replay attack window.
 
 ```typescript
-import { verifyNep413Signature } from "near-kit"
+import { Near, verifyNep413Signature } from "near-kit"
+
+const near = new Near({ network: "mainnet" })
 
 app.post("/api/login", async (req, res) => {
   const { signedMessage, nonce } = req.body
   // Reconstruct nonce buffer from the JSON array
   const nonceBuffer = Buffer.from(nonce)
 
-  // 1. Verify Cryptography & Content
-  const isValid = verifyNep413Signature(signedMessage, {
-    message: "Log in to MyApp", // Must match exactly what was signed
-    recipient: "myapp.com", // Must match YOUR app
-    nonce: nonceBuffer, // Must match the nonce sent
-  })
+  // 1. Verify Signature
+  const isValid = await verifyNep413Signature(
+    signedMessage,
+    {
+      message: "Log in to MyApp", // Must match exactly what was signed
+      recipient: "myapp.com", // Must match YOUR app
+      nonce: nonceBuffer, // Must match the nonce sent
+    },
+    { near }
+  )
 
   if (!isValid) {
     return res.status(401).send("Invalid or expired signature")
@@ -73,11 +79,20 @@ app.post("/api/login", async (req, res) => {
 })
 ```
 
+This verifies the cryptographic signature and confirms the public key belongs to the claimed account as a full access key.
+
 Customize expiration window if needed:
 
 ```typescript
 // Accept signatures up to 10 minutes old
-verifyNep413Signature(signedMessage, params, { maxAge: 10 * 60 * 1000 })
+await verifyNep413Signature(signedMessage, params, { near, maxAge: 10 * 60 * 1000 })
+```
+
+You can also check key existence directly:
+
+```typescript
+// Returns true if the key exists and is a full access key
+const hasKey = await near.fullAccessKeyExists("alice.near", "ed25519:...")
 ```
 
 ```admonish warning title="Security Critical: Replay Attacks"
