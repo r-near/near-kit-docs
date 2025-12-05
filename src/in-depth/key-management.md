@@ -98,6 +98,9 @@ await Promise.all([
 ])
 ```
 
+> [!tip] Complete Example
+> See [`examples/rotating-keystore.ts`](https://github.com/r-near/near-kit/blob/main/examples/rotating-keystore.ts) for a complete working example including account setup and adding multiple access keys.
+
 ## Permissions
 
 When you add a key to an account (using `.addKey`), you define what that key can do.
