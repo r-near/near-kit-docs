@@ -1,5 +1,6 @@
 ---
 title: 'The "Universal Code" Pattern'
+description: "Write once, run anywhere - backend, frontend, or tests"
 ---
 
 One of `near-kit`'s superpowers is that it abstracts the "Signer."
@@ -39,88 +40,89 @@ export async function buyItem(near: Near, signerId: string, itemId: string) {
 
 Now, let's see how to initialize the `Near` object for different environments.
 
-### Quick Scripts (The Convenience Way)
+<Tabs>
+  <Tab title="Script">
+    For simple scripts, passing a raw private key is the easiest method.
+    
+    ```typescript
+    import { Near } from "near-kit"
+    import { buyItem } from "./features/buy-item"
 
-For simple scripts, passing a raw private key is the easiest method.
+    const near = new Near({
+      network: "testnet",
+      privateKey: process.env.ADMIN_KEY, // "ed25519:..."
+      defaultSignerId: "admin.testnet",
+    })
 
-```typescript
-import { Near } from "near-kit"
-import { buyItem } from "./features/buy-item"
+    await buyItem(near, "admin.testnet", "sword-1")
+    ```
+  </Tab>
+  <Tab title="Backend">
+    In production server environments, you rarely handle raw private key strings manually. You use a `KeyStore`.
 
-const near = new Near({
-  network: "testnet",
-  privateKey: process.env.ADMIN_KEY, // "ed25519:..."
-  defaultSignerId: "admin.testnet",
-})
+    A `KeyStore` manages keys for multiple accounts. When you call `.transaction("alice.near")`, the `Near` instance automatically looks up Alice's key in the store.
+    
+    ```typescript
+    import { Near } from "near-kit"
+    import { FileKeyStore } from "near-kit/keys" // Node.js only
+    import { buyItem } from "./features/buy-item"
 
-await buyItem(near, "admin.testnet", "sword-1")
-```
+    // Load keys from the standard ~/.near-credentials directory
+    const keyStore = new FileKeyStore("~/.near-credentials", "testnet")
 
-### Robust Backend (The KeyStore Way)
+    const near = new Near({
+      network: "testnet",
+      keyStore: keyStore, // Pass the store instead of a single key
+    })
 
-In production server environments, you rarely handle raw private keys strings manually. You use a `KeyStore`.
+    // The Near instance will look inside ~/.near-credentials/testnet/worker.json
+    // to find the key for 'worker.testnet'
+    await buyItem(near, "worker.testnet", "sword-1")
+    ```
 
-A `KeyStore` manages keys for multiple accounts. When you call `.transaction("alice.near")`, the `Near` instance automatically looks up Alice's key in the store.
+    <Tip>
+    **Why use a KeyStore?** It allows your app to manage multiple accounts (e.g., `worker-1`, `worker-2`, `admin`) seamlessly. You just switch the `signerId` argument, and `near-kit` finds the right key.
+    </Tip>
+  </Tab>
+  <Tab title="Frontend">
+    In the browser, you don't have private keys. You have a Wallet Adapter.
+    
+    ```typescript
+    import { Near, fromWalletSelector } from "near-kit"
+    import { buyItem } from "./features/buy-item"
 
-```typescript
-import { Near } from "near-kit"
-import { FileKeyStore } from "near-kit/keys" // Node.js only
-import { buyItem } from "./features/buy-item"
+    // ... setup wallet selector ...
+    const wallet = await selector.wallet()
 
-// Load keys from the standard ~/.near-credentials directory
-const keyStore = new FileKeyStore("~/.near-credentials", "testnet")
+    const near = new Near({
+      network: "testnet",
+      wallet: fromWalletSelector(wallet), // Adapter handles signing
+    })
 
-const near = new Near({
-  network: "testnet",
-  keyStore: keyStore, // Pass the store instead of a single key
-})
+    const userAccount = (await wallet.getAccounts())[0].accountId
 
-// The Near instance will look inside ~/.near-credentials/testnet/worker.json
-// to find the key for 'worker.testnet'
-await buyItem(near, "worker.testnet", "sword-1")
-```
+    // The wallet popup will appear for the user!
+    await buyItem(near, userAccount, "sword-1")
+    ```
+  </Tab>
+  <Tab title="Testing">
+    In tests, `near-kit` auto-configures everything when you pass the sandbox object.
+    
+    ```typescript
+    import { Near } from "near-kit"
+    import { Sandbox } from "near-kit/sandbox"
+    import { buyItem } from "./features/buy-item"
 
-> **Why use a KeyStore?** It allows your app to manage multiple accounts (e.g., `worker-1`, `worker-2`, `admin`) seamlessly. You just switch the `signerId` argument, and `near-kit` finds the right key.
+    const sandbox = await Sandbox.start()
 
-### Frontend (The Wallet Way)
+    const near = new Near({
+      network: sandbox, // Auto-configures RPC and Root Key
+    })
 
-In the browser, you don't have private keys. You have a Wallet Adapter.
-
-```typescript
-import { Near, fromWalletSelector } from "near-kit"
-import { buyItem } from "./features/buy-item"
-
-// ... setup wallet selector ...
-const wallet = await selector.wallet()
-
-const near = new Near({
-  network: "testnet",
-  wallet: fromWalletSelector(wallet), // Adapter handles signing
-})
-
-const userAccount = (await wallet.getAccounts())[0].accountId
-
-// The wallet popup will appear for the user!
-await buyItem(near, userAccount, "sword-1")
-```
-
-### Testing (The Sandbox Way)
-
-In tests, `near-kit` auto-configures everything when you pass the sandbox object.
-
-```typescript
-import { Near } from "near-kit"
-import { Sandbox } from "near-kit/sandbox"
-import { buyItem } from "./features/buy-item"
-
-const sandbox = await Sandbox.start()
-
-const near = new Near({
-  network: sandbox, // Auto-configures RPC and Root Key
-})
-
-await buyItem(near, sandbox.rootAccount.id, "sword-1")
-```
+    await buyItem(near, sandbox.rootAccount.id, "sword-1")
+    ```
+  </Tab>
+</Tabs>
 
 ## Summary
 
