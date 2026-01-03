@@ -20,65 +20,55 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Documentation",
-        "groups": [
-          {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "start-here/quickstart",
-              "start-here/mental-model",
-              "start-here/migration"
-            ]
-          },
-          {
-            "group": "Essentials",
-            "pages": [
-              "essentials/reading-data",
-              "essentials/writing-data",
-              "essentials/type-safe-contracts"
-            ]
-          },
-          {
-            "group": "Building dApps",
-            "pages": [
-              "dapp-workflow/frontend-integration",
-              "dapp-workflow/universal-pattern",
-              "dapp-workflow/testing"
-            ]
-          }
+        "group": "Getting Started",
+        "icon": "rocket",
+        "pages": [
+          "index",
+          "start-here/quickstart",
+          "start-here/mental-model",
+          "start-here/migration"
         ]
       },
       {
-        "tab": "Advanced",
-        "groups": [
-          {
-            "group": "Deep Dives",
-            "pages": [
-              "in-depth/error-handling",
-              "in-depth/key-management",
-              "in-depth/advanced-transactions",
-              "in-depth/meta-transactions",
-              "in-depth/message-signing",
-              "in-depth/global-contracts"
-            ]
-          }
+        "group": "Essentials",
+        "icon": "book-open",
+        "pages": [
+          "essentials/reading-data",
+          "essentials/writing-data",
+          "essentials/type-safe-contracts"
         ]
       },
       {
-        "tab": "Reference",
-        "groups": [
-          {
-            "group": "API Reference",
-            "pages": [
-              "reference/actions",
-              "reference/configuration",
-              "reference/data-structures",
-              "reference/ai-integration"
-            ]
-          }
+        "group": "Building dApps",
+        "icon": "browser",
+        "pages": [
+          "dapp-workflow/frontend-integration",
+          "dapp-workflow/universal-pattern",
+          "dapp-workflow/testing"
+        ]
+      },
+      {
+        "group": "Advanced",
+        "icon": "graduation-cap",
+        "pages": [
+          "in-depth/error-handling",
+          "in-depth/key-management",
+          "in-depth/advanced-transactions",
+          "in-depth/meta-transactions",
+          "in-depth/message-signing",
+          "in-depth/global-contracts"
+        ]
+      },
+      {
+        "group": "Reference",
+        "icon": "code",
+        "pages": [
+          "reference/actions",
+          "reference/configuration",
+          "reference/data-structures",
+          "reference/ai-integration"
         ]
       }
     ]

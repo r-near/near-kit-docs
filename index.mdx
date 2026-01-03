@@ -1,5 +1,6 @@
 ---
 title: "Introduction"
+description: "A modern, lightweight TypeScript SDK for NEAR blockchain"
 ---
 
 Welcome to `near-kit`.
@@ -8,13 +9,22 @@ If you have built on NEAR before, you know that the tooling can sometimes feel..
 
 ## Why `near-kit`?
 
-### 1. It Speaks Human
+<CardGroup cols={2}>
+  <Card title="Human-Readable Units" icon="text">
+    No more calculating zeros. Write `"10.5 NEAR"` or `"30 Tgas"` — the library handles conversions.
+  </Card>
+  <Card title="Fluent API" icon="link">
+    Chainable builder pattern that makes your code read like a sentence.
+  </Card>
+  <Card title="Type Safety" icon="shield-check">
+    Full TypeScript support with typed errors and contract interfaces.
+  </Card>
+  <Card title="Universal" icon="globe">
+    Same API for backend scripts, frontend dApps, and integration tests.
+  </Card>
+</CardGroup>
 
-We hate calculating zeros. Instead of forcing you to convert units manually or worry about big integers, `near-kit` accepts strings like `"10.5 NEAR"` or `"30 Tgas"`. The library handles the math and conversion for you.
-
-### 2. Fluent API
-
-Building transactions shouldn't require an instruction manual. `near-kit` uses a chainable builder pattern that makes your code read like a sentence:
+## See It In Action
 
 ```typescript
 await near
@@ -24,14 +34,16 @@ await near
   .send()
 ```
 
-### 3. Type Safety
+## Get Started
 
-We leverage TypeScript to catch bugs before you run your code. From typed errors to fully typed contract interfaces, your IDE is your best friend.
-
-### 4. Universal
-
-Whether you are writing a backend script, a frontend React dApp, or an integration test, your code looks exactly the same. Learn the API once, use it everywhere.
-
-## What's Next?
-
-Ready to write some code? Jump to the [Quickstart](/start-here/quickstart).
+<CardGroup cols={3}>
+  <Card title="Quickstart" icon="rocket" href="/start-here/quickstart">
+    Send your first transaction in under 2 minutes.
+  </Card>
+  <Card title="Mental Model" icon="brain" href="/start-here/mental-model">
+    Understand the core concepts behind near-kit.
+  </Card>
+  <Card title="Migration Guide" icon="arrow-right-arrow-left" href="/start-here/migration">
+    Coming from near-api-js? We've got you covered.
+  </Card>
+</CardGroup>
