@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "near-kit",
+  "name": "NEAR Kit",
   "description": "A TypeScript library for interacting with NEAR - simple, type-safe, and intuitive",
   "colors": {
     "primary": "#00C08B",
