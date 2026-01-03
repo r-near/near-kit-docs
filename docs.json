@@ -19,6 +19,16 @@
       "github": "https://github.com/r-near/near-kit"
     }
   },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor"
+    ]
+  },
   "navigation": {
     "groups": [
       {
