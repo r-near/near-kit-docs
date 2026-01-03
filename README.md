@@ -6,36 +6,29 @@ Documentation site for near-kit - a TypeScript library for interacting with NEAR
 
 ## Local Development
 
-This documentation is built with [mdBook](https://rust-lang.github.io/mdBook/).
+This documentation has been migrated to [Mintlify](https://mintlify.com/).
 
 ### Prerequisites
 
-- [Rust and Cargo](https://www.rust-lang.org/tools/install)
-- mdBook and mdbook-admonish
+- [Node.js](https://nodejs.org/) (version 18 or higher)
+- Mintlify CLI
 
 ### Setup
 
 ```bash
-# Install mdBook
-cargo install mdbook
-
-# Install mdbook-admonish preprocessor
-cargo install mdbook-admonish
-mdbook-admonish install .
+# Install Mintlify CLI
+npm i -g mintlify
 ```
 
 ### Build and Serve
 
 ```bash
-# Build the documentation
-mdbook build
-
-# Serve locally with live reload
-mdbook serve
+# Start the local development server
+mint dev
 ```
 
 The site will be available at `http://localhost:3000`.
 
 ## Deployment
 
-This site automatically deploys to Cloudflare Pages at [kit.near.tools](https://kit.near.tools) when changes are pushed to the `main` branch.
+The documentation is hosted on Mintlify. Changes pushed to the `main` branch are automatically deployed.

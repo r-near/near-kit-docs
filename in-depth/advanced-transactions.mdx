@@ -1,4 +1,6 @@
-# Advanced Transactions
+---
+title: "Advanced Transactions"
+---
 
 The `TransactionBuilder` allows you to orchestrate complex account management and state changes. Understanding how these actions execute is critical for writing safe smart contracts and scripts.
 
@@ -11,17 +13,17 @@ All actions added to a single transaction are executed **sequentially as one ato
 
 In other words: **within one transaction / receipt, it’s all-or-nothing.**
 
-```admonish warning title="The atomicity boundary stops at the transaction itself"
-Cross-contract calls created *by* your transaction run later as separate receipts. Once those child receipts have been emitted and executed on other contracts, their effects are **not** automatically rolled back if something else fails later—you must implement any “compensating logic” yourself.
-```
+<Warning title="The atomicity boundary stops at the transaction itself">
+Cross-contract calls created *by* your transaction run later as separate receipts. Once those child receipts have been emitted and executed on other contracts, their effects are **not** automatically rolled back if something else fails later—you must implement any "compensating logic" yourself.
+</Warning>
 
 ## 2. The "Factory" Pattern (Batching)
 
 Because of the atomicity rules above, we can safely use the "Factory" pattern: creating a new sub-account, funding it, deploying a contract to it, and initializing that contract—all in one transaction.
 
-```admonish tip title="Why do it this way?"
+<Tip title="Why do it this way?">
 If you deploy a contract but forget to initialize it, anyone could call `init` and take ownership. By bundling `deploy` and `init` in one atomic transaction, you guarantee that **only you** can initialize it, and if initialization fails, the account creation is rolled back entirely.
-```
+</Tip>
 
 ```typescript
 import { generateKey } from "near-kit"
@@ -86,9 +88,9 @@ await near
   .send()
 ```
 
-```admonish info title="Understanding Allowance"
+<Info title="Understanding Allowance">
 The `allowance` is a specific amount of NEAR set aside **strictly for gas fees**. It cannot be transferred or withdrawn. If the key uses up this allowance, it will be deleted automatically.
-```
+</Info>
 
 ### Rotating Keys (Security)
 
@@ -116,9 +118,9 @@ await near
   .send()
 ```
 
-```admonish note title="Unstaking"
+<Note title="Unstaking">
 To unstake, you typically need to call function methods (`unstake`, `withdraw`) on the staking pool contract rather than using a native action.
-```
+</Note>
 
 ## 5. Deleting Accounts
 
@@ -152,29 +154,30 @@ You can pass these options to `.send({ waitUntil: "..." })`.
 - **Returns:** When the entire chain of receipts finishes execution.
 - **Data:** Full logs and return values are available.
 
-```admonish tip title="Best for most cases"
+<Tip title="Best for most cases">
 This is the default for a reason. It provides the return value you need for your UI, and happens relatively quickly (~2s).
-```
+</Tip>
 
 #### `INCLUDED`
 
 - **Returns:** When the transaction is in a block.
 - **Data:** **No return values or logs are available yet.**
 
-```admonish warning title="Missing Data"
+<Warning title="Missing Data">
 Use `INCLUDED` only for "fire-and-forget" UI feedback. You cannot check if the smart contract call actually succeeded or failed logic checks yet.
-```
+</Warning>
 
 #### `FINAL`
 
 - **Returns:** When the block containing the _last_ receipt is finalized.
 - **State:** 100% irreversible.
 
-````admonish example title="High Value Transfer"
+<Tip title="High Value Transfer">
 Use `FINAL` when moving large amounts of money to ensure 100% certainty.
+
 ```typescript
 await near.transaction("alice.near")
   .transfer("bob.near", "10000 NEAR")
   .send({ waitUntil: "FINAL" });
 ```
-````
+</Tip>

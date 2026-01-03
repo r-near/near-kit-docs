@@ -1,0 +1,86 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "near-kit",
+  "description": "A TypeScript library for interacting with NEAR - simple, type-safe, and intuitive",
+  "colors": {
+    "primary": "#00C08B",
+    "light": "#00EC9E",
+    "dark": "#00A87A"
+  },
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/r-near/near-kit"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/r-near/near-kit"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "index",
+              "start-here/quickstart",
+              "start-here/mental-model",
+              "start-here/migration"
+            ]
+          },
+          {
+            "group": "Essentials",
+            "pages": [
+              "essentials/reading-data",
+              "essentials/writing-data",
+              "essentials/type-safe-contracts"
+            ]
+          },
+          {
+            "group": "Building dApps",
+            "pages": [
+              "dapp-workflow/frontend-integration",
+              "dapp-workflow/universal-pattern",
+              "dapp-workflow/testing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Advanced",
+        "groups": [
+          {
+            "group": "Deep Dives",
+            "pages": [
+              "in-depth/error-handling",
+              "in-depth/key-management",
+              "in-depth/advanced-transactions",
+              "in-depth/meta-transactions",
+              "in-depth/message-signing",
+              "in-depth/global-contracts"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
+          {
+            "group": "API Reference",
+            "pages": [
+              "reference/actions",
+              "reference/configuration",
+              "reference/data-structures",
+              "reference/ai-integration"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

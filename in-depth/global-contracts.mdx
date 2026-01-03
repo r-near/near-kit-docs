@@ -1,4 +1,6 @@
-# Global Contracts
+---
+title: "Global Contracts"
+---
 
 On NEAR, typically every smart contract account holds its own copy of the Wasm bytecode. This means if you deploy the same Token contract to 1,000 accounts, you are paying for that storage 1,000 times.
 
@@ -6,7 +8,7 @@ On NEAR, typically every smart contract account holds its own copy of the Wasm b
 
 ## Use Cases
 
-- **Factories:** If you are building a "DAO Factory" or "Token Factory" that deploys new contracts for users, this reduces the deployment cost from ~4 NEAR (storage) to <0.1 NEAR.
+- **Factories:** If you are building a "DAO Factory" or "Token Factory" that deploys new contracts for users, this reduces the deployment cost from ~4 NEAR (storage) to less than 0.1 NEAR.
 - **Standard Libraries:** Publish a standard implementation (like a multisig) that everyone trusts and uses.
 
 ## 1. Publishing Code
@@ -137,6 +139,6 @@ isDeterministicAccountId("alice.near") // false
 - **Sharded contracts:** Deploy many instances with predictable addresses
 - **Code verification:** Verify that another contract is running specific code
 
-```admonish info title="Learn More"
-See [NEP-616](https://github.com/near/NEPs/blob/master/neps/nep-0616.md) for the full specification.
-```
+<Info title="Learn More">
+See [NEP-616](https://github.com/near/NEPs/blob/master/neps/nep-0616) for the full specification.
+</Info>
