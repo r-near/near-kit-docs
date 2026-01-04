@@ -44,9 +44,35 @@ MCP allows AI tools to connect directly to our documentation server. This gives 
 https://kit.near.tools/mcp
 ```
 
-<Tip>
-See [Mintlify's MCP documentation](https://mintlify.com/docs/ai/model-context-protocol) for setup instructions specific to your AI tool.
-</Tip>
+<Tabs>
+  <Tab title="Claude Desktop">
+    Add to your `claude_desktop_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "near-kit": {
+          "command": "npx",
+          "args": ["-y", "@anthropic-ai/mcp-remote", "https://kit.near.tools/mcp"]
+        }
+      }
+    }
+    ```
+  </Tab>
+  <Tab title="Cursor">
+    Add to your Cursor MCP settings:
+
+    ```json
+    {
+      "mcpServers": {
+        "near-kit": {
+          "url": "https://kit.near.tools/mcp"
+        }
+      }
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ---
 
