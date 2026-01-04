@@ -1,51 +1,131 @@
 ---
 title: "For AI Agents"
+description: "How to use near-kit documentation with AI coding assistants"
 ---
 
-This documentation is available in a raw text format optimized for Large Language Models (LLMs).
+This documentation is optimized for AI coding assistants. Whether you're using **Cursor**, **Windsurf**, **Claude**, **ChatGPT**, or other AI tools, there are multiple ways to give them context about `near-kit`.
 
-If you are using AI coding assistants like **Cursor**, **Windsurf**, **ChatGPT**, or **Claude**, providing this context file significantly reduces hallucinations and ensures the AI uses the modern `near-kit` API instead of the legacy `near-api-js`.
+<Warning>
+**Important:** `near-kit` is NOT `near-api-js`. AI models often confuse the two. Always provide context to ensure the AI uses the correct, modern API.
+</Warning>
 
-## Available Context Files
+## Quick Access Methods
 
-### 1. Full Context (Recommended)
-
-Contains the entire documentation book in a single text file. Use this for most coding tasks.
-
-- **URL:** [https://kit.near.tools/llms-full.txt](https://kit.near.tools/llms-full.txt)
-- **Filename:** `llms-full.txt`
-
-### 2. Index Only
-
-A condensed table of contents. Use this if you are hitting context window limits and only need the agent to know the library structure.
-
-- **URL:** [https://kit.near.tools/llms.txt](https://kit.near.tools/llms.txt)
-- **Filename:** `llms.txt`
+<CardGroup cols={2}>
+  <Card title="Contextual Menu" icon="mouse-pointer">
+    Select any text on this site and use the popup menu to send it directly to ChatGPT, Claude, Cursor, or VS Code.
+  </Card>
+  <Card title="MCP Server" icon="plug">
+    Connect your AI tool to our Model Context Protocol server for live documentation access.
+  </Card>
+  <Card title="llms.txt" icon="file-text">
+    Fetch the full documentation as a single text file optimized for LLMs.
+  </Card>
+  <Card title="Markdown Export" icon="download">
+    Click the copy button on any page to get markdown for your AI context.
+  </Card>
+</CardGroup>
 
 ---
 
-## How to Use
+## Model Context Protocol (MCP)
 
-### In Cursor / Windsurf
+MCP allows AI tools to connect directly to our documentation server. This gives your AI assistant live access to search and read the docs.
 
-1.  Open the **Chat** pane.
-2.  Type `@` and choose **Add Link** (or just paste the URL).
-3.  Paste: [https://kit.near.tools/llms-full.txt](https://kit.near.tools/llms-full.txt)
-4.  The editor will ingest the documentation as a reference file.
+### Supported Tools
 
-### In ChatGPT / Claude
+- **Claude Desktop** - Native MCP support
+- **Cursor** - Via MCP extension
+- **VS Code** - Via Copilot MCP extensions
 
-1.  Paste the URL [https://kit.near.tools/llms-full.txt](https://kit.near.tools/llms-full.txt) into the chat.
-2.  Add the prompt below.
+### Connection URL
+
+```
+https://mcp.mintlify.com/near-kit
+```
+
+<Tip>
+See [Mintlify's MCP documentation](https://mintlify.com/docs/ai/model-context-protocol) for setup instructions specific to your AI tool.
+</Tip>
+
+---
+
+## llms.txt Files
+
+The full documentation is available as plain text files optimized for LLM context windows.
+
+<AccordionGroup>
+  <Accordion title="llms-full.txt (Recommended)" icon="file">
+    Contains the entire documentation in a single text file. Use this for most coding tasks.
+
+    **URL:** [https://near-kit.mintlify.app/llms-full.txt](https://near-kit.mintlify.app/llms-full.txt)
+
+    ```bash
+    curl https://near-kit.mintlify.app/llms-full.txt
+    ```
+  </Accordion>
+
+  <Accordion title="llms.txt (Index Only)" icon="list">
+    A condensed table of contents with page summaries. Use this if you're hitting context window limits.
+
+    **URL:** [https://near-kit.mintlify.app/llms.txt](https://near-kit.mintlify.app/llms.txt)
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Using with AI Assistants
+
+<Tabs>
+  <Tab title="Cursor / Windsurf">
+    1. Open the **Chat** pane
+    2. Type `@Docs` and add the URL: `https://near-kit.mintlify.app/llms-full.txt`
+    3. Or use `@Web` to fetch any documentation page directly
+
+    The editor will ingest the documentation as a reference file.
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    Connect via MCP for the best experience:
+
+    1. Open Claude Desktop settings
+    2. Add the MCP server: `https://mcp.mintlify.com/near-kit`
+    3. Claude can now search and read the docs directly
+
+    Or paste the llms-full.txt URL in your conversation.
+  </Tab>
+
+  <Tab title="ChatGPT">
+    1. Paste the URL in your chat: `https://near-kit.mintlify.app/llms-full.txt`
+    2. Ask ChatGPT to read and reference it
+    3. Add the recommended prompt below
+  </Tab>
+
+  <Tab title="VS Code Copilot">
+    Use the contextual menu on this site:
+
+    1. Select code or text you want to reference
+    2. Click the VS Code option in the popup menu
+    3. The content opens in your editor for Copilot context
+  </Tab>
+</Tabs>
+
+---
 
 ## Recommended Prompt
 
-When starting a new session, tell the AI explicitly to ignore the old library.
+When starting a new AI session, use this prompt to ensure accurate responses:
 
 ```text
-I am building an application using the `near-kit` library.
+I am building an application using the `near-kit` TypeScript library for NEAR blockchain.
 
-IMPORTANT: `near-kit` is NOT `near-api-js`.
-- Do not use `near-api-js` patterns (like `utils.format` or `account.functionCall`).
-- Use the provided `llms-full.txt` context file as the source of truth for API methods and types.
+IMPORTANT: `near-kit` is NOT `near-api-js`. They are completely different libraries.
+- Do NOT use `near-api-js` patterns (like `utils.format`, `account.functionCall`, `BN`)
+- Use human-readable strings for amounts: "10 NEAR", "30 Tgas"
+- Use the fluent transaction builder: `near.transaction().transfer().send()`
+- Reference the provided documentation as the source of truth
 ```
+
+<Note>
+This prompt helps prevent the AI from hallucinating `near-api-js` patterns, which is a common issue since that library has more training data.
+</Note>
