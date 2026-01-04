@@ -1,95 +1,89 @@
-# CLAUDE.md
+# Mintlify documentation
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Working relationship
+- You can push back on ideas - this can lead to better documentation. Cite sources and explain your reasoning when you do so
+- ALWAYS ask for clarification rather than making assumptions
+- NEVER lie, guess, or make up anything
 
-## Project Overview
+## Project context
+- Format: MDX files with YAML frontmatter
+- Config: docs.json for navigation, theme, settings
+- Components: Mintlify components
+- This is documentation for `near-kit`, a TypeScript library for interacting with the NEAR blockchain
 
-This is a documentation site for `near-kit`, a TypeScript library for interacting with the NEAR blockchain. The documentation is built using [mdBook](https://rust-lang.github.io/mdBook/), a Rust-based documentation generator that converts Markdown files into a static HTML site.
+## Content strategy
+- Document just enough for user success - not too much, not too little
+- Prioritize accuracy and usability
+- Make content evergreen when possible
+- Search for existing content before adding anything new. Avoid duplication unless it is done for a strategic reason
+- Check existing patterns for consistency
+- Start by making the smallest reasonable changes
 
-**Live site:** https://kit.near.tools
+## docs.json
 
-## Build System
+- Refer to the [docs.json schema](https://mintlify.com/docs.json) when building the docs.json file and site navigation
 
-### Prerequisites
+## Frontmatter requirements for pages
+- title: Clear, descriptive page title
+- description: Concise summary for SEO/navigation
 
-- Rust and Cargo (for mdBook tools)
-- Bun (for deployment)
+## Writing standards
+- Second-person voice ("you")
+- Prerequisites at start of procedural content
+- Test all code examples before publishing
+- Match style and formatting of existing pages
+- Include both basic and advanced use cases
+- Language tags on all code blocks
+- Alt text on all images
+- Relative paths for internal links
 
-### Key mdBook Tools
+## Mintlify components
 
-This project uses several mdBook preprocessors and tools:
-- `mdbook` (v0.4.52) - Core documentation builder
-- `mdbook-admonish` - Adds styled admonition blocks (note, warning, tip, etc.)
-- `mdbook-linkcheck` - Validates internal and external links
-- `mdbook-llms-txt-tools` - Generates AI-friendly text versions of documentation
+Use these components when appropriate:
 
-### Common Commands
-
-```bash
-# Build the documentation (generates output to ./book/html/)
-mdbook build
-
-# Serve locally with live reload at http://localhost:3000
-mdbook serve
-
-# Run with debug logging
-RUST_LOG=debug mdbook build
-
-# Install required tools (if not already installed)
-cargo install mdbook
-cargo install mdbook-admonish
-mdbook-admonish install .
+### Callouts
+```mdx
+<Note>Informational note</Note>
+<Warning>Warning message</Warning>
+<Tip>Helpful tip</Tip>
+<Info>Additional info</Info>
 ```
 
-## Documentation Structure
+### Layout
+```mdx
+<CardGroup cols={2}> - Navigation cards
+<Steps>, <Step> - Numbered tutorials
+<Tabs>, <Tab> - Tabbed content (use for before/after comparisons, multi-environment examples)
+<AccordionGroup>, <Accordion> - Collapsible sections
+<CodeGroup> - Multi-language code blocks
+```
 
-Documentation source files are in `src/` and organized by category:
+### API Documentation
+```mdx
+<ResponseField name="param" type="string" required>
+  Description of the parameter
+</ResponseField>
+```
 
-- `start-here/` - Introduction, quickstart, mental model, migration guide
-- `essentials/` - Core concepts: reading data, writing data, type-safe contracts
-- `dapp-workflow/` - Frontend integration, universal pattern, testing
-- `in-depth/` - Advanced topics: error handling, key management, transactions, message signing
-- `reference/` - Action reference, configuration, data structures, AI integration
+## Git workflow
+- NEVER use --no-verify when committing
+- Ask how to handle uncommitted changes before starting
+- Create a new branch when no clear branch exists for changes
+- Commit frequently throughout development
+- NEVER skip or disable pre-commit hooks
 
-The site structure is defined in `src/SUMMARY.md`, which controls the sidebar navigation.
-
-## Styling and Theme
-
-The site uses Catppuccin themes (Latte for light, Macchiato for dark) with custom CSS:
-- `theme/catppuccin.css` - Base theme colors
-- `theme/catppuccin-admonish.css` - Admonition styling
-- `theme/mdbook-admonish-custom.css` - Custom admonition overrides
-- `theme/aha_styles.css` - Additional custom styles
-- `theme/custom.css` - Site-specific customizations
-
-Custom admonition directive `reset` is configured in `book.toml`.
+## Do not
+- Skip frontmatter on any MDX file
+- Use absolute URLs for internal links
+- Include untested code examples
+- Make assumptions - always ask for clarification
 
 ## Deployment
+The site deploys automatically via Mintlify when changes are pushed to the `main` branch. No CI/CD workflow is needed.
 
-The site deploys automatically to Cloudflare Pages (via Workers) at https://kit.near.tools when changes are pushed to the `main` branch.
+## Local development
 
-The deployment workflow (`.github/workflows/deploy.yml`):
-1. Installs mdBook tools (with caching for faster builds)
-2. Runs `mdbook build`
-3. Copies `llms.txt`, `llms-full.txt`, and source markdown files to `book/html/`
-4. Deploys to Cloudflare Workers using `bunx wrangler deploy`
-
-Cloudflare Workers configuration is in `wrangler.jsonc` and points to the `./book/html` directory as static assets.
-
-## LLMs.txt Generation
-
-The site generates two AI-friendly text versions:
-- `llms.txt` - Condensed version for AI agents
-- `llms-full.txt` - Full content version
-
-Both are restricted to the "For AI Agents" section (see `reference/ai-integration.md`) and available at the site root.
-
-## Content Guidelines
-
-When editing documentation:
-- All content is Markdown in the `src/` directory
-- Use mdbook-admonish syntax for callouts: `> [!note]`, `> [!warning]`, `> [!tip]`, etc.
-- The custom `> [!reset]` directive is available for special callouts
-- Edit URLs are enabled - each page has an "Edit on GitHub" link
-- Internal links use relative paths (e.g., `/start-here/quickstart.md`)
-- All admonitions are collapsible by default (configured in `book.toml`)
+```bash
+# Preview locally at http://localhost:3000
+npx mint dev
+```
