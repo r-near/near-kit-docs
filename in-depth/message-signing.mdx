@@ -1,8 +1,10 @@
-# Message Signing (Authentication)
+---
+title: "Message Signing (Authentication)"
+---
 
 Transactions change the blockchain state and cost gas. Sometimes, you just want to prove **who you are**.
 
-Message Signing (standardized in [NEP-413](https://github.com/near/NEPs/blob/master/neps/nep-0413.md)) allows a user to sign a piece of data with their private key off-chain. This is free, instant, and is the standard way to implement **"Log in with NEAR"**.
+Message Signing (standardized in [NEP-413](https://github.com/near/NEPs/blob/master/neps/nep-0413)) allows a user to sign a piece of data with their private key off-chain. This is free, instant, and is the standard way to implement **"Log in with NEAR"**.
 
 ## How it Works
 
@@ -95,11 +97,11 @@ You can also check key existence directly:
 const hasKey = await near.fullAccessKeyExists("alice.near", "ed25519:...")
 ```
 
-```admonish warning title="Security Critical: Replay Attacks"
+<Warning title="Security Critical: Replay Attacks">
 Cryptographic verification alone is not enough! If you do not check if the `nonce` has been used before, an attacker who intercepts the signed message can "replay" it to your server to log in as the user again.
 
 **Always store used nonces in your database (with an expiration time) and reject duplicates.**
-```
+</Warning>
 
 ## Type Definition
 

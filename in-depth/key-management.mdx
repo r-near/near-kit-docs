@@ -1,4 +1,6 @@
-# Key Management
+---
+title: "Key Management"
+---
 
 Managing private keys securely is the most critical part of any blockchain application. `near-kit` provides several `KeyStore` implementations to suit different environments, from temporary testing to secure production servers.
 
@@ -97,6 +99,10 @@ await Promise.all([
   near.send("c.near", "1 NEAR"), // Uses Key 3
 ])
 ```
+
+<Tip title="Complete Example">
+See [`examples/rotating-keystore.ts`](https://github.com/r-near/near-kit/blob/main/examples/rotating-keystore.ts) for a complete working example including account setup and adding multiple access keys.
+</Tip>
 
 ## Permissions
 
